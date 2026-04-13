@@ -10,21 +10,133 @@
 A multi-market trading analysis center (Stocks, Crypto, Forex) powered by 25+ AI agents organized in 6 departments. The agents communicate via a Shared Knowledge Bus, debate opportunities (Bull vs Bear), and deliver recommendations with human approval before execution. The UI is a pixel-art "trading floor" where you can visually see agents working, thinking, and communicating.
 
 ## Key Decisions Made
+
+### Core System
 - **Automation level:** Semi-automatic. Agents analyze and recommend, but ALWAYS require human approval before executing trades
 - **Markets:** ALL — Stocks (NYSE/NASDAQ), Crypto (BTC, ETH, alts), Forex (major/exotic pairs)
 - **Budget:** Minimize costs, up to ~$100/month max. Free tier APIs preferred. Enforced by Tokin (cost watchdog agent)
-- **Notifications:** WhatsApp (NOT Telegram) + Dashboard UI + Email digest
-- **UI style:** Pixel agents where you can SEE the AI thinking flow, communication between agents, and the full pipeline from research to decision
+- **Notifications:** WhatsApp (primary mobile) via OpenClaw + Dashboard UI + Email digest
 - **Base framework:** TradingAgents (github.com/TauricResearch/TradingAgents) extended with custom agents
-- **UI framework:** Pending decision between Claw-Empire, Agent Office, or Custom Build (see UI_COMPARISON_Guide.md)
+
+### UI Framework — DECIDED ✅
+- **Choice:** Claw-Empire (Option B) as base, extended with trading features
+- **Why:** Already has departments, WhatsApp, CEO Chat, Kanban, XP gamification, PowerPoint export, PixiJS 8, Docker — fastest path to a quality demo
+- **Design aesthetic:** Terraria (general UI) + Carrion (important moments — trade signals, consensus, alerts)
+  - Terraria: chunky pixel art, RPG panels with wood/stone borders, warm earth tones, inventory-feel agent management, progression trees, cozy underground trading floor atmosphere
+  - Carrion: when a trade is found or consensus reached → floor darkens, red/black pulse, glowing data streams, fluid organic animations — the system feels ALIVE and POWERFUL
+- **Additional features on top of Claw-Empire:**
+  - Agent-can-hire-agents system (agents spawn new agents autonomously)
+  - Click-to-follow / click-to-talk with any individual agent
+  - TradingView charts integrated natively (not widget — full with agent overlays)
+  - Chart overlays in real-time AND in reports (entry/exit markers per agent)
+  - CEO Chat: talk to ONE agent OR broadcast to ALL simultaneously
+  - Full gamification: XP for agents, system performance ranking, user XP too
+  - PowerPoint AND PDF report export
+- **See:** `UI_COMPARISON_Guide.md` for full option comparison
+
+### Messaging — DECIDED ✅
+- **OpenClaw** (https://openclaw.ai) is installed and running locally
+- Handles WhatsApp via WhatsApp Web (Baileys) — no third-party API cost
+- Also supports: Telegram, Discord, Slack, Signal, iMessage, Google Chat
+- The Messenger agent routes all notifications through OpenClaw
+- WhatsApp approval format: `[✅ APPROVE] [❌ REJECT] [📄 FULL REPORT] [✏️ MODIFY]`
+- 30-minute reminder if no response to a trade signal
+- Daily digest at 9am ET
+
+### Risk Management — DECIDED ✅
+- Multiple risk profiles (selectable per session or per trade):
+  - `CONSERVATIVE`: max 1% per trade, signals >80% confidence only
+  - `BALANCED`: max 2% per trade (default), signals >65%
+  - `AGGRESSIVE`: max 3% per trade, signals >65%
+  - `CUSTOM`: user defines every parameter
+- Multiple strategies can run simultaneously in paper trading for comparison
+- The Shield holds veto power regardless of profile
+
+### Agent Scheduling — DECIDED ✅
+- **Market hours (Mon–Fri 9:30am–4:00pm ET for stocks):** ALL 25 agents at 100%
+- **Off-hours skeleton crew (always active):** X-Ray, The Scheduler, Cryptid, Globe, Tokin, The Watchdog
+  - Reason: crypto and forex never sleep; political events don't wait for market hours
+- **Off-hours rest:** All other agents activate ON-DEMAND when skeleton crew finds something
+- **Crypto/Forex agents:** 24/7 always — never pause
+- **Scalable:** Scheduler reads agents dynamically from DB — adding new agents = automatic inclusion
+
+### Database — DECIDED ✅
+- **SQLite** (Claw-Empire built-in): UI state, agents, tasks, XP, departments
+- **ChromaDB**: Semantic vector memory — "I've seen this situation before, here's what happened"
+- **Redis**: Knowledge Bus pub/sub + price/news cache (1-min price TTL, 5-min news TTL)
+- Future migration path: PostgreSQL when SQLite hits limits
+- Deduplication: SHA-256 hash of content stored in Redis SET (no duplicate news/data)
+
+### Security & API Key Management — DECIDED ✅
+- **1Password CLI**: primary secret manager — injects keys as env vars at Docker startup
+- **`.env` file**: local fallback (gitignored, never committed)
+- **Claw-Empire AES-256-GCM**: for OAuth tokens and messenger channel tokens stored in SQLite
+- Paper trading safety: hard flag in config prevents any live execution accidentally
+
+### Deployment — DECIDED ✅
+- **Local PC only** (for now — VPS later when ready)
+- Single command to start: `docker compose up` (interactive) or `docker compose up -d` (background/24-7)
+- All services in docker-compose: Claw-Empire UI, FastAPI Python brain, Redis, ChromaDB, Celery workers
+- Data persists in `./data` directory between restarts
+
+### Testing Strategy — DECIDED ✅
+- **Minimum 30 days paper trading** before any discussion of real money
+- Backtesting: minimum 1 year historical data per strategy before trusting it
+- The Professor tracks per-agent accuracy per market per timeframe
+- Multiple risk profiles running simultaneously in paper trading for A/B comparison
+
+### WhatsApp Agent — DECIDED ✅
+- The Scribe generates the report → The Messenger delivers via OpenClaw/WhatsApp
+- The Messenger is the ONLY agent that touches WhatsApp (no other agent sends directly)
+- CEO Chat in Claw-Empire = The Boss / direct agent communication
+- Reports delivered as PDF attachment or inline summary, with PPT available on request
 
 ---
 
 ## Architecture Overview
 
+### Two-Layer System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  LAYER 1: CLAW-EMPIRE UI (Node.js / TypeScript)             │
+│  • PixiJS 8 pixel office — Terraria/Carrion aesthetic       │
+│  • 6 trading departments with agent sprites                 │
+│  • CEO Chat + click-to-follow + click-to-talk               │
+│  • Kanban board for trade pipeline                          │
+│  • XP gamification + agent leaderboard                      │
+│  • PowerPoint + PDF report export                           │
+│  • WebSocket real-time updates                              │
+│  • SQLite (agents, tasks, UI state, XP)                     │
+│  Port: 8790                                                 │
+└─────────────────────┬───────────────────────────────────────┘
+                      │  REST + WebSocket bridge (port 8791)
+┌─────────────────────▼───────────────────────────────────────┐
+│  LAYER 2: PYTHON BRAIN (FastAPI)                            │
+│  • 25 trading agents (LangGraph orchestration)             │
+│  • Redis Knowledge Bus (pub/sub between agents)            │
+│  • ChromaDB (semantic memory — "seen this before")         │
+│  • TradingAgents framework (base multi-agent system)        │
+│  • Celery (agent scheduling, market hours awareness)        │
+│  • All financial API integrations (15+ APIs)               │
+│  Port: 8791                                                 │
+└─────────────────────────────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│  OPENCLAW (Messaging Gateway — already running)             │
+│  • WhatsApp via Baileys (QR-linked, no API cost)           │
+│  • Telegram, Discord, Slack, Signal also available         │
+│  • The Messenger agent routes all notifications here        │
+│  • Trade approval flow: APPROVE / REJECT / REPORT           │
+│  Port: 18789                                                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Agent Pipeline Flow
+
 ```
 DEPT 1: INVESTIGACION (9 agents) — gather raw market, political, geopolitical data
-         ↓ raw intelligence via Shared Knowledge Bus
+         ↓ raw intelligence via Redis Knowledge Bus
 DEPT 2: ANALISIS (5 agents) — process, correlate, debate Bull vs Bear
          ↓ processed insights
 DEPT 3: ESTRATEGIA (2 agents) — synthesize into trade plans + reports
@@ -598,29 +710,47 @@ agent:
 ## Tech Stack
 
 ```
-Backend:
-├── Python 3.11+
-├── TradingAgents framework (base multi-agent system)
-├── LangGraph (agent orchestration)
-├── FastAPI (system API)
-├── Redis (Shared Knowledge Bus - pub/sub)
-├── ChromaDB (vector search for semantic memory)
-├── SQLite/PostgreSQL (data storage, trade history, reports)
-└── Celery (async tasks and scheduling)
+UI Layer (Claw-Empire — already exists, we extend it):
+├── TypeScript 5.9 + React 19 + Vite 7 + Tailwind CSS 4
+├── PixiJS 8 (pixel art rendering — Terraria/Carrion aesthetic)
+├── Express 5 backend (Node.js)
+├── SQLite (embedded, zero-config — agents, tasks, XP, UI state)
+├── WebSocket (real-time agent activity)
+├── PptxGenJS (PowerPoint report export)
+└── React Router 7
 
-Frontend (pending UI decision):
-├── React / Next.js
-├── PixiJS 8 or Phaser.js (pixel art rendering)
-├── TradingView Lightweight Charts (free)
-├── WebSocket (real-time updates)
-└── Tailwind CSS
+Trading Brain (Python — we build this):
+├── Python 3.11+
+├── TradingAgents framework (github.com/TauricResearch/TradingAgents)
+├── LangGraph (agent orchestration)
+├── FastAPI (REST + WebSocket bridge to Claw-Empire)
+├── Redis (Knowledge Bus pub/sub + data cache)
+├── ChromaDB (vector search for semantic memory)
+├── SQLite extended (trade history, agent performance, strategy graveyard)
+└── Celery + Redis (async scheduling, market-hours aware)
+
+Messaging (OpenClaw — already running):
+├── OpenClaw gateway (https://openclaw.ai) — self-hosted, local
+├── WhatsApp via WhatsApp Web / Baileys (QR-linked, $0/month)
+├── Telegram, Discord, Slack, Signal, iMessage also available
+└── Port 18789 — The Messenger routes all notifications here
+
+Charts & Reports:
+├── TradingView Lightweight Charts (native integration with agent overlays)
+├── PowerPoint via PptxGenJS (Claw-Empire built-in)
+└── PDF export (custom generation)
 
 AI/LLM:
-├── Claude API (primary analysis) — via Anthropic
-├── OpenAI GPT (secondary/validation)
-├── FinBERT (financial sentiment NLP, free)
-├── Ollama (local models for high-frequency tasks)
+├── Claude API — primary deep analysis
+├── OpenAI GPT — secondary/validation
+├── FinBERT (financial sentiment NLP, free, local)
+├── Ollama (local models for high-frequency/cheap tasks)
 └── TradingAgents multi-LLM support
+
+Secret Management:
+├── 1Password CLI — injects secrets as env vars at Docker startup
+├── .env file — local fallback (gitignored)
+└── Claw-Empire AES-256-GCM — OAuth + messenger tokens in SQLite
 
 Data APIs (all free tier):
 ├── Alpaca (stocks + crypto + execution, paper trading)
@@ -642,96 +772,146 @@ Data APIs (all free tier):
 └── TradingView Charts (widgets, free)
 
 Execution (paper trading only until proven):
-├── Alpaca MCP Server (stocks + crypto + options)
+├── Alpaca (stocks + crypto + options)
 ├── FXCM demo account (forex)
 └── OANDA practice account (forex)
+
+Infrastructure:
+└── Docker Compose — single `docker compose up` starts everything
+    Services: claw-empire, python-brain, redis, chromadb, celery-workers
+    Data persists in ./data directory
 ```
 
 ## Estimated Costs
 - **Infrastructure + APIs (free tiers):** $0/month
+- **OpenClaw (self-hosted):** $0/month
 - **Claude API (LLM analysis):** ~$10-30/month
 - **Total:** ~$10-30/month (can go up to $65-100 with premium data upgrades)
 
 ---
 
-## UI Decision (PENDING)
+## UI Decision — RESOLVED ✅
 
-Three options documented in `UI_COMPARISON_Guide.md`:
-
-| Option | Base | Pros | Cons | Time to Demo |
-|--------|------|------|------|-------------|
-| **A: Agent Office** | Phaser.js + Colyseus | Best pixel art, pathfinding, semantic memory | No departments, no WhatsApp, no Kanban | 2-3 weeks |
-| **B: Claw-Empire** (recommended) | PixiJS 8 + Express | WhatsApp built-in, departments, CEO chat, Kanban, XP system, meetings | Dev-focused, needs trading adaptation | 1-2 weeks |
-| **C: Custom Build** | React + PixiJS/Phaser | 100% trading-optimized, TradingView native | Longest build time, no existing features | 4-6 weeks |
+**Choice: Claw-Empire as base, extended with trading features.**
+See full comparison in `UI_COMPARISON_Guide.md`. Decision made 2026-04-13.
 
 ---
 
-## Remaining Planning Areas (TODO)
+## Planning Decisions — ALL RESOLVED ✅
 
-These areas still need to be defined before implementation begins:
+### 1. Data Pipeline Architecture ✅
+- Flow: External API → Agent → Redis pub/sub (Knowledge Bus) → Subscribing agents → ChromaDB
+- Rate limiting: Token bucket per API, stored in Redis
+- Cache TTL: price data 1min, news 5min, fundamentals 1hr
+- Deduplication: SHA-256 hash of content in Redis SET — no duplicate processing
+- Real-time: WebSocket from Alpaca for prices; polling for everything else
 
-### 1. Data Pipeline Architecture
-- How data flows technically from API → Agent → Knowledge Bus → Next Agent
-- Rate limiting strategy across 15+ APIs
-- Data caching and deduplication
-- Real-time vs scheduled data collection per agent
+### 2. Agent Scheduling & Orchestration ✅
+- Market hours (Mon–Fri 9:30am–4pm ET): ALL 25 agents at full capacity
+- Off-hours skeleton crew: X-Ray, The Scheduler, Cryptid, Globe, Tokin, The Watchdog
+- All other agents: sleep off-hours, activate on-demand when skeleton crew sends alert
+- Crypto/Forex agents: 24/7 (never pause)
+- Scheduling is DB-driven (dynamic) — adding new agents = automatic inclusion, no code changes
+- Priority queue for LLM calls when multiple agents compete simultaneously
+- Execution model: sequential across departments (Research → Analysis → Strategy → Decision), parallel within each department
 
-### 2. Agent Scheduling & Orchestration
-- Which agents run continuously vs on schedule vs on-event
-- Cycle timing (how often each agent thinks/acts)
-- Priority system when multiple agents need LLM calls simultaneously
-- Parallel vs sequential execution strategy
+### 3. Database Schema ✅
+- **SQLite (Claw-Empire):** departments, agents, tasks, XP, settings, OAuth tokens
+- **SQLite extended (Python brain):** trades, agent_messages, agent_performance, strategy_graveyard, watchlist, api_usage, risk_profiles
+- **ChromaDB:** vector embeddings for semantic memory ("this situation resembles X from 2023")
+- **Redis:** Knowledge Bus pub/sub + short-term cache
+- Migration path: PostgreSQL later if SQLite hits limits
 
-### 3. Database Schema
-- Trade history storage
-- Agent message logs
-- Performance tracking per agent
-- Strategy graveyard structure
-- Vector embeddings for semantic search
+### 4. Security & API Key Management ✅
+- **1Password CLI:** primary — injects all secrets as env vars at Docker startup
+- **`.env` file:** local fallback (always gitignored)
+- **Claw-Empire AES-256-GCM:** built-in for OAuth and messenger tokens in SQLite
+- **Paper trading hard flag:** prevents any live execution accidentally (`LIVE_TRADING=false` in config)
+- Rate limit tracking per API in Redis — never accidentally hit bans
 
-### 4. Security & API Key Management
-- Secure storage of 15+ API keys
-- Encryption at rest (AES-256 if using Claw-Empire)
-- Rate limit management to avoid bans
-- Paper trading safety (prevent accidental live trading)
+### 5. Deployment Strategy ✅
+- **Local PC** (current), VPS later when ready
+- `docker compose up` → interactive foreground
+- `docker compose up -d` → background, restarts automatically (24/7 mode)
+- Services: claw-empire UI, python-brain FastAPI, redis, chromadb, celery workers
+- Data in `./data` directory (persists between restarts)
 
-### 5. Deployment Strategy
-- Local development setup
-- Docker containerization
-- VPS deployment (if needed)
-- Backup and recovery
+### 6. Testing Strategy ✅
+- **Minimum 30 days paper trading** before any real money discussion
+- Backtesting: minimum 1 year historical data per strategy
+- The Professor tracks per-agent accuracy per market per timeframe
+- Multiple risk profiles (Conservative / Balanced / Aggressive) run simultaneously in paper for A/B
 
-### 6. Testing Strategy
-- Paper trading validation period (how long before considering live?)
-- Backtesting methodology
-- Agent accuracy benchmarking
-- A/B testing of agent configurations
+### 7. User Configuration ✅
+- Watchlist management from CEO Chat or UI panel
+- Risk profile selectable per session: CONSERVATIVE / BALANCED / AGGRESSIVE / CUSTOM
+- WhatsApp quiet hours: configurable (no alerts during sleep)
+- Alert threshold: what confidence level triggers an immediate WhatsApp vs daily digest
+- Multiple concurrent paper strategies for comparison
 
-### 7. User Configuration
-- Trading rules/preferences (risk tolerance, preferred markets, trading hours)
-- Watchlist management
-- Alert preferences and quiet hours
-- Dashboard customization
+### 8. Edge Cases & Error Handling ✅
+- **API down:** graceful degradation → use cached data → The Messenger alerts human
+- **50/50 agent split:** The Eleventh Man has tiebreaker weight → if still tied = NO TRADE
+- **Flash crash (VIX +30% in 1hr):** circuit breaker → pause all new analysis → immediate alert
+- **Runaway agent:** Tokin kills it if it burns 3× its daily LLM budget in a single call
+- **Trade approval timeout:** The Messenger sends reminder at 30min; at 2hr → auto-cancel signal
+- **Position stuck:** The Watchdog escalates to human after 24hr waiting for action
 
-### 8. Edge Cases & Error Handling
-- What happens when an API goes down?
-- What happens when agents disagree fundamentally (50/50 split)?
-- How to handle flash crashes or extreme volatility?
-- Circuit breakers at system level
+### 9. Pixel Office Design ✅
+- 6 department zones on a trading floor (Terraria pixel art aesthetic)
+- Each department has its own visual zone with distinct color/theme (matching Claw-Empire's room themes)
+- **Normal state (Terraria):** warm torchlit atmosphere, wood/stone panel borders, agents sitting at desks, walking between departments, speech bubbles
+- **Trade signal state (Carrion):** floor darkens, red pulse glow, data streams between agents brighten, agent animations become fluid and urgent
+- Click any agent → camera follows + direct chat opens
+- Knowledge Bus visualized as glowing animated data streams between desks
+- Bull vs Bear debate: visual split-screen with speech bubbles alternating
+- Agent hiring: visual "recruitment" animation when an agent spawns a new one
 
-### 9. Pixel Office Design
-- Trading floor layout (department zones)
-- Agent sprites and animations
-- Message visualization (how to show data flowing between agents)
-- How to visually show the Bull vs Bear debate
-- How to show The Eleventh Man's contrarian analysis
-- How to show Maverick's creative ideas
+### 10. WhatsApp Integration Details ✅
+- **Transport:** OpenClaw (already running) → WhatsApp via Baileys (QR-linked, $0/month)
+- **Only agent that sends:** The Messenger (no other agent touches WhatsApp directly)
+- **Trade approval format:**
+  ```
+  🔔 NVDA SELL SIGNAL — 78% confidence
+  Risk: 1.5% | R:R: 1:3.2 | Stop: $141.00
+  [✅ APPROVE] [❌ REJECT] [📄 FULL REPORT] [✏️ MODIFY]
+  ```
+- **Daily digest:** 9am ET — overnight activity summary, open positions, upcoming events
+- **Escalation:** immediate WhatsApp for trade signals; digest for everything else
+- **Reminder:** 30min if no response; 2hr = auto-cancel with notification
 
-### 10. WhatsApp Integration Details
-- Message templates and formatting
-- Approval flow (how human approves via WhatsApp reply)
-- Daily digest format
-- Alert escalation (what deserves an immediate alert vs daily summary)
+---
+
+## Build Timeline (4-Week Roadmap)
+
+```
+WEEK 1 — Foundations
+  ├── Clone Claw-Empire locally
+  ├── Remap 6 departments to trading departments
+  ├── Seed all 25 agents in the DB
+  ├── Apply Terraria aesthetic (palette, borders, color themes)
+  └── docker compose up — first working local instance
+
+WEEK 2 — Python Brain
+  ├── FastAPI + Redis + ChromaDB setup
+  ├── REST+WebSocket bridge to Claw-Empire (port 8791)
+  ├── First 3 agents working: Charts, X-Ray, The Scheduler
+  └── Knowledge Bus sending real messages between agents
+
+WEEK 3 — Full Analysis Pipeline
+  ├── Bull + Bear real debate via Knowledge Bus
+  ├── The Architect synthesizing into trade plan
+  ├── The Scribe generating PDF/PPT reports
+  ├── The Messenger routing to OpenClaw/WhatsApp
+  └── Trade approval flow working end-to-end
+
+WEEK 4 — Demo Quality
+  ├── Carrion aesthetic for trade-found moments
+  ├── TradingView charts with agent overlays
+  ├── Paper trading active with Alpaca
+  ├── All 25 agents deployed
+  └── CEO Chat, click-to-talk, gamification live
+```
 
 ---
 
@@ -739,12 +919,22 @@ These areas still need to be defined before implementation begins:
 
 | File | Description |
 |------|-------------|
-| `CLAUDE.md` | This file — complete project context |
+| `CLAUDE.md` | This file — complete project context (updated 2026-04-13) |
 | `PLAN_MAESTRO_TradingAICenter.md` | Original v1 architecture plan |
 | `BLUEPRINT_AgentTeams_v1.md` | First agent blueprint (superseded by v2) |
 | `BLUEPRINT_AgentTeams_v2.md` | Current agent blueprint with all updates |
-| `UI_COMPARISON_Guide.md` | Detailed comparison of 3 UI options |
+| `UI_COMPARISON_Guide.md` | UI option comparison — decision made: Option B (Claw-Empire) |
 | `TradingAICenter_Blueprint_v2.pdf` | Printable PDF version of blueprint |
+
+## Running Infrastructure
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| OpenClaw | ✅ Running | WhatsApp gateway via Baileys, port 18789 |
+| Claw-Empire | 🔲 Not started | Clone & configure next |
+| Python Brain (FastAPI) | 🔲 Not started | Week 2 |
+| Redis | 🔲 Not started | Part of docker-compose |
+| ChromaDB | 🔲 Not started | Part of docker-compose |
 
 ---
 
