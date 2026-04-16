@@ -53,13 +53,30 @@ def main():
     time.sleep(1.2)
 
     # ---- Double-clap callback ----
+    # Tracks when we last opened a tab.  During the first ~8 s after opening,
+    # the page is still loading so notify_activate() returns False even though
+    # a tab is on its way — this cooldown prevents duplicate tabs.
+    _clap_state = {"cooldown_until": 0.0}
+
     def on_clap():
-        # 1. Play theme song (non-blocking, fires immediately)
+        now = time.time()
+
+        # 1. Hard cooldown: page is loading, SSE not yet connected
+        if now < _clap_state["cooldown_until"]:
+            return
+
+        # 2. SSE check: tab already open and connected
+        if server.notify_activate():
+            return
+
+        # 3. Full activation
+        _clap_state["cooldown_until"] = now + 8.0  # block until page loads
+
         song_path = config.get("song_path", "")
         if song_path:
+            audio_player.set_volume(config.get("vol_song", 80))
             audio_player.play(song_path)
 
-        # 2. Launch configured app
         app_path = config.get("app_path", "")
         if app_path and os.path.isfile(app_path):
             try:
@@ -67,8 +84,13 @@ def main():
             except Exception as exc:
                 print(f"[Jarvis] Could not launch app: {exc}")
 
-        # 3. Open Jarvis HUD
         webbrowser.open("http://localhost:5000")
+
+    # When the SSE stream connects (page fully loaded) cancel the cooldown early
+    def _on_sse_connect():
+        _clap_state["cooldown_until"] = 0.0
+
+    server.on_client_connect = _on_sse_connect
 
     # ---- Clap detector ----
     detector = ClapDetector(on_clap)

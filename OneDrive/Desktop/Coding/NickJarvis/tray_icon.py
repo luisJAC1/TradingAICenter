@@ -87,6 +87,7 @@ class TrayIcon:
             pystray.MenuItem("Set Gemini API Key",     self._set_api_key),
             pystray.MenuItem("Test clap detection",    self._toggle_test_mode),
             pystray.MenuItem("Edit greetings",         self._edit_greetings),
+            pystray.MenuItem("Re-run Setup Wizard",    self._rerun_setup),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("Exit", self._exit),
         )
@@ -193,8 +194,50 @@ class TrayIcon:
         threading.Thread(target=_notify, daemon=True).start()
 
     def _edit_greetings(self, *_):
-        self._config.ensure_saludos()
-        subprocess.Popen(["notepad.exe", self._config.saludos_path])
+        def _run():
+            # Build path locally — don't rely on module-level constant surviving threads
+            appdata    = os.environ.get("APPDATA") or os.path.expanduser("~")
+            jarvis_dir = os.path.join(appdata, "Jarvis")
+            saludos    = os.path.join(jarvis_dir, "saludos.txt")
+
+            try:
+                os.makedirs(jarvis_dir, exist_ok=True)
+
+                if not os.path.isfile(saludos):
+                    default = (
+                        "# Jarvis Greetings — one greeting per line.\n"
+                        "# Lines starting with # are ignored.\n\n"
+                        "Que tal Nicolas, aqui a tu servicio, empecemos modo bestia\n"
+                        "Bienvenido hijo de puta, es hora de comer pan y comer culo y ya se nos acabo el pan\n"
+                        "Hola nicocado avocado, es momento de brillar\n"
+                        "Hola amiguito, bienvenido, en que te puedo ayudar?\n"
+                        "Sistemas en linea, listo para dominar el mundo contigo\n"
+                        "De vuelta en accion, que necesitas hoy campeon?\n"
+                        "Encendido y listo, dime que hacemos\n"
+                    )
+                    with open(saludos, "w", encoding="utf-8") as f:
+                        f.write(default)
+
+                # shell=True is the most reliable way to open a file on Windows
+                subprocess.Popen(f'notepad.exe "{saludos}"', shell=True)
+
+            except Exception as e:
+                root = _tk_root()
+                messagebox.showerror(
+                    "Jarvis — Greetings Error",
+                    f"Could not open greetings file.\n\nError: {e}\n\nPath: {saludos}",
+                    parent=root,
+                )
+                root.destroy()
+
+        threading.Thread(target=_run, daemon=True).start()
+
+    def _rerun_setup(self, *_):
+        def _run():
+            from setup_wizard import SetupWizard
+            wizard = SetupWizard(self._config)
+            wizard.run()
+        threading.Thread(target=_run, daemon=True).start()
 
     def _exit(self, icon, item):
         icon.stop()

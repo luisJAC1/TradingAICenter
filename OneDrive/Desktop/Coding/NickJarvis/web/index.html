@@ -113,16 +113,35 @@
     </div>
 
     <div class="setting-block">
-      <label class="s-label" for="sel-voice">TTS VOICE</label>
-      <select id="sel-voice" class="s-select">
-        <option value="">Default system voice</option>
+      <label class="s-label" for="sel-tts-voice">JARVIS VOICE (Gemini TTS)</label>
+      <select id="sel-tts-voice" class="s-select">
+        <option value="Charon">Charon — deep, authoritative (recommended)</option>
+        <option value="Puck">Puck — upbeat, energetic</option>
+        <option value="Kore">Kore — firm, clear</option>
+        <option value="Fenrir">Fenrir — dynamic</option>
+        <option value="Aoede">Aoede — smooth</option>
+        <option value="Zephyr">Zephyr — calm</option>
+        <option value="Orbit">Orbit — clean</option>
+        <option value="Leda">Leda — bright</option>
       </select>
     </div>
 
     <div class="setting-block">
-      <label class="s-label">THEME SONG</label>
+      <label class="s-label">VOICE VOLUME</label>
+      <div class="s-row">
+        <input id="rng-vol-tts" type="range" min="0" max="100" step="1" value="80" class="s-range">
+        <span id="lbl-vol-tts" class="s-range-val">80%</span>
+      </div>
+    </div>
+
+    <div class="setting-block">
+      <label class="s-label">SONG VOLUME</label>
+      <div class="s-row">
+        <input id="rng-vol-song" type="range" min="0" max="100" step="1" value="80" class="s-range">
+        <span id="lbl-vol-song" class="s-range-val">80%</span>
+      </div>
       <p class="s-hint" id="lbl-song-path">No song configured.</p>
-      <p class="s-hint">To change: right-click the tray icon &rarr; "Configure theme song".</p>
+      <p class="s-hint">Configure song: tray icon &rarr; "Configure theme song".</p>
     </div>
 
     <div class="setting-block">

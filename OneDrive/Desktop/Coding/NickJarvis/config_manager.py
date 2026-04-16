@@ -32,9 +32,18 @@ DEFAULT_CONFIG = {
     "app_path": "",
     "song_path": "",
     "language": "es-ES",
+    "vol_tts":  80,
+    "vol_song": 80,
+    "tts_voice": "Charon",
     "startup_enabled": True,
     "first_run_done": False,
 }
+
+# If song_path is empty on load, check these locations automatically
+_DEFAULT_SONG_CANDIDATES = [
+    os.path.join(os.path.expanduser("~"), "Downloads",
+                 "Free Bird Solo - QuickSounds.com.mp3"),
+]
 
 
 class ConfigManager:
@@ -44,7 +53,12 @@ class ConfigManager:
         self._load()
 
     def is_first_run(self):
-        return not self._cfg.get("first_run_done", False)
+        # Show wizard if never completed OR if API key is still blank
+        if not self._cfg.get("first_run_done", False):
+            return True
+        if not self._cfg.get("gemini_api_key", "").strip():
+            return True
+        return False
 
     def get(self, key, default=None):
         return self._cfg.get(key, default)
@@ -58,6 +72,7 @@ class ConfigManager:
         self._save()
 
     def ensure_saludos(self):
+        os.makedirs(JARVIS_DIR, exist_ok=True)   # re-create dir if it was deleted
         if not os.path.exists(SALUDOS_FILE):
             with open(SALUDOS_FILE, "w", encoding="utf-8") as f:
                 f.write(DEFAULT_SALUDOS)
@@ -95,10 +110,18 @@ class ConfigManager:
                     self._cfg = json.load(f)
                 for k, v in DEFAULT_CONFIG.items():
                     self._cfg.setdefault(k, v)
-                return
             except Exception:
-                pass
-        self._cfg = dict(DEFAULT_CONFIG)
+                self._cfg = dict(DEFAULT_CONFIG)
+        else:
+            self._cfg = dict(DEFAULT_CONFIG)
+
+        # Auto-detect default song if none configured
+        if not self._cfg.get("song_path"):
+            for candidate in _DEFAULT_SONG_CANDIDATES:
+                if os.path.isfile(candidate):
+                    self._cfg["song_path"] = candidate
+                    self._save()
+                    break
 
     def _save(self):
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
