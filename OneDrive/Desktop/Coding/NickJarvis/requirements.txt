@@ -1,0 +1,11 @@
+# J.A.R.V.I.S — Python dependencies
+# Install with:  pip install -r requirements.txt
+
+flask==3.0.3
+requests==2.32.3
+sounddevice==0.4.7
+numpy==1.26.4
+pystray==0.19.5
+Pillow==10.4.0
+pygame==2.6.0
+pyinstaller==6.8.0
