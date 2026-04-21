@@ -34,5 +34,5 @@ Currently in active development. Core agent architecture is functional. Frontend
 
 Author
 Luis Alfaro — LegalTech AI Developer
-Upwork: https://www.upwork.com/freelancers/~luisalfaro
+Upwork: https://www.upwork.com/freelancers/~01280feeb96ce944c3
 GitHub: https://github.com/luisJAC1
