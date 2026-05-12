@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter','Segoe UI',sans-serif; font-size: 9.5pt; color: #1a1a2e; background: #f5f0e8; padding: 18mm 16mm; }
+
+  .cover { text-align: center; padding: 20mm 0 14mm; border-bottom: 3px solid #2a1a0a; margin-bottom: 10mm; }
+  .cover-title { font-size: 24pt; font-weight: 900; color: #1a0a00; line-height: 1.1; }
+  .cover-v2 { display: inline-block; background: #c0392b; color: white; font-size: 10pt; font-weight: 800; padding: 3px 14px; border-radius: 20px; margin: 6px 0 4px; letter-spacing: 1px; }
+  .cover-sub { font-size: 9.5pt; color: #7a6a50; margin-top: 5px; }
+  .cover-note { font-size: 8pt; color: #9a8a6a; margin-top: 5px; font-style: italic; }
+  .cover-stats { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+  .stat-box { background: #2a1a0a; color: #f5e8c8; border-radius: 8px; padding: 6px 14px; font-size: 8.5pt; font-weight: 700; }
+  .stat-box span { font-size: 16pt; display: block; }
+  .stat-new { background: #c0392b; }
+
+  .section-title { font-size: 13pt; font-weight: 900; color: #1a0a00; margin: 10mm 0 4mm; padding-bottom: 4px; border-bottom: 2.5px solid #2a1a0a; }
+  .section-sub { font-size: 11pt; font-weight: 800; color: #1a0a00; margin: 8mm 0 3mm; padding-bottom: 3px; border-bottom: 1.5px solid #d4c8a8; }
+
+  .dept-header { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 8px 8px 0 0; margin-top: 8mm; }
+  .dept-header h2 { font-size: 11pt; font-weight: 900; }
+  .dept-header .dept-meta { font-size: 7.5pt; opacity: 0.85; margin-top: 1px; }
+  .dept-icon { font-size: 16pt; }
+  .dept-research  { background: #3a5a28; color: #e8f5d8; }
+  .dept-analysis  { background: #2a4a6a; color: #d8eaf5; }
+  .dept-strategy  { background: #7a6030; color: #f5e8c8; }
+  .dept-learning  { background: #4a2a6a; color: #e8d8f5; }
+  .dept-special   { background: #1a1a3a; color: #d8d8f5; }
+  .dept-meta-sys  { background: #2a1a0a; color: #f5e8c8; }
+
+  .agents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 7px; background: white; border: 1.5px solid #2a1a0a; border-top: none; border-radius: 0 0 8px 8px; }
+  .agents-grid.single { grid-template-columns: 1fr; }
+  .agents-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .agent-card { background: #fdfaf4; border: 1.5px solid #c0392b; border-radius: 6px; padding: 8px 10px; position: relative; }
+  .agent-card.mod { border-color: #f59e0b; }
+  .new-badge { position: absolute; top: -1px; right: 8px; background: #c0392b; color: white; font-size: 6pt; font-weight: 800; padding: 2px 7px; border-radius: 0 0 5px 5px; }
+  .mod-badge { position: absolute; top: -1px; right: 8px; background: #f59e0b; color: #1a0a00; font-size: 6pt; font-weight: 800; padding: 2px 7px; border-radius: 0 0 5px 5px; }
+  .agent-name { font-size: 10.5pt; font-weight: 800; color: #1a0a00; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+  .agent-emoji { font-size: 13pt; }
+  .agent-id { font-family: 'Courier New',monospace; font-size: 7pt; color: #9a8a6a; background: #ede8d8; padding: 1px 5px; border-radius: 3px; margin-left: auto; }
+  .badge { font-size: 6.5pt; font-weight: 700; padding: 1px 5px; border-radius: 3px; display: inline-block; }
+  .badge-special { background: #2980b9; color: white; }
+  .badge-meta { background: #2a1a0a; color: #f5e8c8; }
+
+  .agent-row { display: flex; gap: 4px; margin-top: 4px; font-size: 7.5pt; flex-wrap: wrap; }
+  .label { color: #7a6a50; font-weight: 700; min-width: 54px; flex-shrink: 0; }
+  .val { color: #2a1a0a; line-height: 1.4; }
+  .val.mono { font-family: 'Courier New',monospace; font-size: 7pt; }
+
+  .agent-power { margin-top: 5px; font-size: 7.5pt; padding: 4px 7px; border-radius: 0 4px 4px 0; line-height: 1.4; }
+  .ap-red    { background: #fff0ee; border-left: 3px solid #c0392b; color: #3a1010; }
+  .ap-amber  { background: #fdf6e8; border-left: 3px solid #d4a85a; color: #3a2a00; }
+  .ap-blue   { background: #eef5fd; border-left: 3px solid #2980b9; color: #0a2040; }
+  .ap-purple { background: #f5eefb; border-left: 3px solid #8e44ad; color: #2a0a5a; }
+  .ap-dark   { background: #f5efe8; border-left: 3px solid #2a1a0a; color: #2a1a0a; }
+  .ap-green  { background: #edfaf2; border-left: 3px solid #27ae60; color: #0a3a1a; }
+  .ap-yellow { background: #fffbe6; border-left: 3px solid #f59e0b; color: #3a2a00; }
+
+  .divider { border: none; border-top: 1px dashed #d4c8a8; margin: 4px 0; }
+  .no-break { page-break-inside: avoid; }
+  .page-break { page-break-before: always; }
+  @page { size: A4; margin: 15mm 12mm; }
+
+  table.ref { width: 100%; border-collapse: collapse; font-size: 7.5pt; background: white; }
+  table.ref th { background: #2a1a0a; color: #f5e8c8; padding: 5px 5px; text-align: left; font-weight: 700; font-size: 7pt; }
+  table.ref td { padding: 3px 5px; border-bottom: 1px solid #e8e0d0; vertical-align: middle; }
+  table.ref tr:nth-child(even) td { background: #fdfaf4; }
+  table.ref tr.new-row td { background: #fff5f5; }
+  table.ref tr.mod-row td { background: #fffbe6; }
+  table.ref tr.new-row:nth-child(even) td { background: #fff0f0; }
+  table.ref tr.mod-row:nth-child(even) td { background: #fff8e0; }
+
+  .dept-tag { font-size: 6pt; padding: 1px 4px; border-radius: 3px; font-weight: 700; white-space: nowrap; display: inline-block; }
+  .tag-research  { background: #d5e8c5; color: #2a5010; }
+  .tag-analysis  { background: #c5d5e8; color: #1a3050; }
+  .tag-strategy  { background: #f0e1c5; color: #5a3800; }
+  .tag-decision  { background: #e8d5d5; color: #5a1a1a; }
+  .tag-execution { background: #f0d5c5; color: #5a2a10; }
+  .tag-learning  { background: #e0d5f0; color: #3a1a5a; }
+  .tag-special   { background: #d5d5f0; color: #1a1a5a; }
+  .tag-meta      { background: #e8dcc8; color: #3a2a0a; }
+  .mono-sm { font-family: 'Courier New',monospace; font-size: 6.5pt; color: #5a4a30; }
+  .new-tag { background: #c0392b; color: white; font-size: 5.5pt; font-weight: 800; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-left: 2px; }
+  .mod-tag { background: #f59e0b; color: #1a0a00; font-size: 5.5pt; font-weight: 800; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-left: 2px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 5mm 0; }
+  .info-card { background: white; border: 1.5px solid #d4c8a8; border-radius: 8px; padding: 9px 11px; }
+  .info-card h3 { font-size: 9.5pt; font-weight: 800; margin-bottom: 5px; }
+  .info-card ul { list-style: none; font-size: 7.5pt; line-height: 1.8; color: #3a2a10; }
+  .info-card ul li::before { content: "· "; color: #9a8a6a; }
+
+  .pipeline-box { background: white; border: 1.5px solid #2a1a0a; border-radius: 8px; padding: 9px 12px; font-size: 7.5pt; font-family: 'Courier New',monospace; line-height: 2; color: #2a1a0a; margin: 5mm 0; }
+  .p-new { color: #c0392b; font-weight: 700; }
+  .p-mod { color: #b07800; font-weight: 700; }
+  .p-exist { color: #7a6a50; }
+
+  .footer-note { text-align: center; font-size: 7pt; color: #9a8a6a; margin-top: 10mm; padding-top: 5px; border-top: 1px solid #d4c8a8; }
+
+  .msg-box { background: #f0f0ff; border: 1px solid #9090d0; border-radius: 6px; padding: 7px 10px; font-size: 7.5pt; font-family: 'Courier New',monospace; line-height: 1.8; margin-top: 5px; }
+  .msg-label { font-size: 6.5pt; font-weight: 700; color: #7a6a50; margin-bottom: 3px; font-family: sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-title">TradingAICenter — Agent Roster</div>
+  <div><span class="cover-v2">VERSION 2</span></div>
+  <div class="cover-sub">9 New Agents + 8 V1 Enhancements — Future Implementation Roadmap</div>
+  <div class="cover-note">Source of truth: <code>config/agents.json</code> · V1 = 26 agents (build first) · V2 = +9 agents</div>
+  <div class="cover-stats">
+    <div class="stat-box"><span>26</span>V1 Agents</div>
+    <div class="stat-box stat-new"><span>+9</span>V2 New</div>
+    <div class="stat-box"><span>35</span>Total V2</div>
+    <div class="stat-box" style="background:#b07800"><span>8</span>V1 Updates</div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="two-col">
+  <div class="info-card" style="border-color:#b07800">
+    <h3 style="color:#b07800">✏️ V1 Agent Enhancements (8 updates)</h3>
+    <ul>
+      <li><strong>X-Ray</strong> — + Hashtag trending + trend velocity</li>
+      <li><strong>The Scheduler</strong> — + 90-day forward calendar, all event types</li>
+      <li><strong>Headlines</strong> — + The Reporter sub-agent (local sources by country)</li>
+      <li><strong>Charts</strong> — + Strategy-aware + "The Rule" integration</li>
+      <li><strong>The Accountant</strong> — + Personal finance dashboard for Alfaro</li>
+      <li><strong>Bull &amp; Bear</strong> — + 24h system debates + weekly all-agent forum</li>
+      <li><strong>The Shield</strong> — + Per-strategy risk profile customization</li>
+      <li><strong>The Messenger</strong> — + Full trade message format (reasoning, exit plan, dollar scenarios)</li>
+    </ul>
+  </div>
+  <div class="info-card" style="border-color:#c0392b">
+    <h3 style="color:#c0392b">🆕 V2 New Agents (9 agents)</h3>
+    <ul>
+      <li><strong>Research +3:</strong> The Greek (options), The Cartographer (sectors), The Scout (source QA)</li>
+      <li><strong>Analysis +1:</strong> The Storm (volatility regime)</li>
+      <li><strong>Strategy +1:</strong> The Oracle (scenario simulation)</li>
+      <li><strong>Learning +1:</strong> The Librarian (narrative memory)</li>
+      <li><strong>Special +1:</strong> The Joker (extreme asymmetric trades)</li>
+      <li><strong>Meta +2:</strong> The Auditor (system health), Questlog (XP engine)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div class="section-title">Updated Pipeline — V2</div>
+<div class="pipeline-box">
+DEPT 1 RESEARCH  →  <span class="p-exist">X-Ray · Scheduler · Headlines · Charts · Accountant · Cryptid · Globe · Ape · Recon</span>
+<span class="p-mod">                  ↳ X-Ray: +hashtag trends  · Scheduler: +90-day all-events  · Headlines: +The Reporter sub-agent</span>
+<span class="p-mod">                  ↳ Charts: +strategy-aware +Rule  · Accountant: +personal finance dashboard</span>
+<span class="p-new">                  +  The Greek (options flow)  ·  The Cartographer (sector rotation)  ·  The Scout (source QA)</span>
+                          ↓ Knowledge Bus
+DEPT 2 ANALYSIS  →  <span class="p-exist">Mood Ring · Pattern Master · Bull · Bear · The Bridge</span>
+<span class="p-mod">                  ↳ Bull &amp; Bear: +daily system debates, weekly all-agent forum → Scribe improvement report</span>
+<span class="p-new">                  +  The Storm (volatility regime — tells Architect what strategy mode to use)</span>
+                          ↓
+DEPT 3 STRATEGY  →  <span class="p-exist">The Architect builds trade plan  ·  The Scribe writes report</span>
+<span class="p-mod">                  ↳ Scribe: +weekly System Improvement Report from all-agent forum</span>
+<span class="p-new">                  +  The Oracle simulates 3–5 scenarios with probabilities</span>
+                          ↓
+SPECIAL          →  <span class="p-exist">The Eleventh Man (contrarian)</span>  <span class="p-new">+  The Joker (asymmetric play)</span>
+                          ↓
+DEPT 4 DECISION  →  <span class="p-exist">The Shield (veto)  →  The Boss (verdict)</span>
+<span class="p-mod">                  ↳ The Shield: +per-strategy risk profiles</span>
+                 →  <span class="p-exist">The Messenger</span> <span class="p-mod">(enhanced WhatsApp format: reasoning + dollar scenarios + exit plan)</span>
+                          ↓
+DEPT 5 EXECUTION →  <span class="p-exist">The Trigger (on approval)  ·  The Watchdog (24/7)</span>
+                          ↓
+DEPT 6 LEARNING  →  <span class="p-exist">The Historian · The Professor</span>  <span class="p-new">+  The Librarian (narrative memory)</span>
+                          ↑ (all agents weekly forum → Scribe)
+META (always-on) →  <span class="p-exist">Tokin (budget)</span>
+<span class="p-new">                  +  The Auditor (system health)  ·  Questlog (XP engine for all agents + Alfaro)</span>
+<span class="p-new">                  +  The Scout (source QA — audits all data sources every 48h)</span>
+</div>
+
+
+<!-- ═══ V1 ENHANCEMENTS ═══ -->
+<div class="page-break"></div>
+<div class="section-title">V1 Agent Enhancements</div>
+
+<!-- X-Ray & Scheduler -->
+<div class="dept-header dept-research">
+  <span class="dept-icon">🔍</span>
+  <div><h2>RESEARCH — V1 Enhancements</h2><div class="dept-meta">4 agents updated</div></div>
+</div>
+<div class="agents-grid">
+
+  <div class="agent-card mod no-break">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">🛰️</span> X-Ray <span class="agent-id">x_ray</span></div>
+    <div class="agent-power ap-yellow">
+      <strong>Added capabilities:</strong><br>
+      · <strong>Hashtag monitoring</strong> — tracks trending hashtags across Twitter/X for market-relevant topics (#TariffsNow, #BankRun, #CryptoRegulation). Applies the same political/market impact analysis to trending topics as to leader tweets.<br>
+      · <strong>Trend velocity</strong> — measures acceleration, not just volume. A hashtag going from 10K → 500K mentions in 2h is a different-quality signal than steady growth over 3 days. Fast velocity = higher urgency score.
+    </div>
+  </div>
+
+  <div class="agent-card mod no-break">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">📅</span> The Scheduler <span class="agent-id">the_scheduler</span></div>
+    <div class="agent-power ap-yellow">
+      <strong>Added capabilities:</strong><br>
+      · <strong>Comprehensive event coverage</strong> — expands beyond economic releases to all market-relevant future events: geopolitical summits, product launches (Apple, Tesla, NVIDIA), FDA approval dates, regulatory deadlines, election calendars, central bank blackout periods, index rebalancing, major conferences (Davos, Jackson Hole, FOMC).<br>
+      · <strong>90-day rolling forward calendar</strong> — not just the current week. Medium-term positioning requires knowing what's coming in 30-60-90 days.
+    </div>
+  </div>
+
+  <div class="agent-card mod no-break">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">📰</span> Headlines + The Reporter <span class="agent-id">headlines</span></div>
+    <div class="agent-power ap-yellow">
+      <strong>The Reporter sub-agent:</strong><br>
+      A local-sources specialist that Headlines activates when a story has strong regional dimension. Headlines calls The Reporter as a tool — it returns a <code>local_context_package</code> with sources from the relevant country/region.<br><br>
+      <strong>Source library (sample):</strong><br>
+      🇲🇽 Mexico: Milenio, TV Azteca, El Financiero, El Economista, Expansión, Forbes México, El Universal, Reforma<br>
+      🇺🇸 USA: Bloomberg, WSJ, Reuters, AP, CNBC, MarketWatch<br>
+      🇪🇺 Europe: FT, Les Echos, Handelsblatt, El País Economía<br>
+      🇨🇳 China: Caixin, South China Morning Post, Xinhua Finance<br>
+      🌎 LATAM: Infobae, La Nación, Folha de S.Paulo, Valor Econômico<br><br>
+      The Reporter is not a standalone agent — it is a tool Headlines invokes. New regions added to config as watchlist grows.
+    </div>
+  </div>
+
+  <div class="agent-card mod no-break">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">📈</span> Charts <span class="agent-id">charts</span></div>
+    <div class="agent-power ap-yellow">
+      <strong>Added capabilities:</strong><br>
+      · <strong>Strategy-aware</strong> — reads the active trading strategy from config at startup (trend-following, mean-reversion, breakout, swing) and adjusts which indicators it prioritizes and how it interprets signals. A mean-reversion setup looks different than a breakout setup even on the same chart.<br>
+      · <strong>The Rule integration</strong> — a configurable set of non-negotiable conditions that must ALL be true for a setup to be valid. If any Rule condition fails, the setup is flagged INVALID regardless of other indicators. The Rule is defined in config and updatable by The Architect or Alfaro without restart.
+    </div>
+  </div>
+
+</div>
+
+<!-- Accountant -->
+<div style="background:white;border:1.5px solid #d4c8a8;border-top:none;padding:7px;border-radius:0 0 8px 8px;margin-bottom:8mm">
+  <div class="agent-card mod no-break" style="margin-top:0">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">🧮</span> The Accountant — Personal Finance Mode <span class="agent-id">the_accountant</span></div>
+    <div class="agent-power ap-yellow">
+      <strong>Added: Personal Finance Dashboard for Alfaro</strong><br>
+      Beyond company fundamentals, The Accountant now tracks Alfaro's own financial picture within this project. Plain language — no quant jargon.<br><br>
+      <strong>Dashboard includes:</strong> Total capital deployed · Paper P&amp;L per open trade · Cumulative realized P&amp;L · Monthly LLM + API costs vs budget (from Tokin) · Cost per trade analyzed · ROI on the AI system itself<br><br>
+      <strong>Example summary:</strong> "This month you spent $18 on AI analysis, generated 3 paper trade signals, simulated P&amp;L is +$240. Your best paper trade this month was NVDA (+$420). Worst was AAPL (-$180). The system is currently earning $13.30 in simulated gains per dollar spent on AI."
+    </div>
+  </div>
+</div>
+
+<!-- Bull Bear Shield -->
+<div class="dept-header dept-special" style="margin-top:2mm">
+  <span class="dept-icon">⚙️</span>
+  <div><h2>ANALYSIS · DECISION — V1 Enhancements</h2><div class="dept-meta">Bull, Bear, The Shield, The Messenger</div></div>
+</div>
+<div class="agents-grid single">
+
+  <div class="agent-card mod no-break">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">🐂🐻</span> Bull &amp; Bear — Scheduled System Debates <span class="agent-id">bull / bear</span></div>
+    <div class="agent-power ap-yellow">
+      <strong>Added: two new debate formats beyond trade-by-trade analysis:</strong><br><br>
+      1. <strong>Daily system improvement debate (every 24h off-market):</strong> Bull and Bear debate the SYSTEM — not an individual trade. "What is our strategy missing? Where are we getting signals wrong? What market conditions are we underweighted for? What would make this system better?" Output: <code>system_debate_round</code> published to Knowledge Bus.<br><br>
+      2. <strong>Weekly all-agent forum (every Sunday):</strong> ALL agents publish a brief "what I observed this week that the system should know" to the Knowledge Bus. The Scribe collects these and produces a <strong>System Improvement Report</strong> — a ranked list of potential improvements by estimated impact. This report goes to The Boss and to Alfaro via WhatsApp Sunday morning.
+    </div>
+  </div>
+
+</div>
+<div style="background:white;border:1.5px solid #d4c8a8;border-top:none;padding:7px;border-radius:0 0 8px 8px;margin-bottom:8mm">
+
+  <div class="agent-card mod no-break">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">🛡️</span> The Shield — Per-Strategy Risk Profiles <span class="agent-id">the_shield</span></div>
+    <div class="agent-power ap-yellow">
+      <strong>Added: strategy-specific risk profile customization</strong><br>
+      Beyond the four base profiles (CONSERVATIVE / BALANCED / AGGRESSIVE / CUSTOM), The Shield now loads different risk parameter sets depending on the active trading strategy.<br><br>
+      Example: a <strong>mean-reversion</strong> strategy may allow tighter stops + higher frequency. A <strong>trend-following</strong> strategy may allow wider stops + smaller size. Each strategy profile defines its own max risk %, max heat, stop rules, and pre-event behavior. Profiles defined in config and selectable by Alfaro or The Architect.
+    </div>
+  </div>
+
+  <!-- Messenger -->
+  <div class="agent-card mod no-break" style="margin-top:7px">
+    <div class="mod-badge">ENHANCED V2</div>
+    <div class="agent-name"><span class="agent-emoji">📲</span> The Messenger — Full WhatsApp Message Spec <span class="agent-id">the_messenger</span></div>
+    <div class="agent-power ap-yellow" style="margin-bottom:6px"><strong>Every trade signal message now includes 8 required fields:</strong></div>
+    <div class="msg-label">TRADE SIGNAL FORMAT</div>
+    <div class="msg-box">
+🔔 NVDA — BUY SIGNAL · 78% conviction<br>
+<br>
+Why: Earnings beat incoming (Scheduler) · Unusual calls detected (Recon) ·<br>
+RSI oversold 4H (Charts) · DXY weakening (Globe). Bull won debate 3-1.<br>
+<br>
+Entry: $141.50 | Stop: $138.00 | TP1: $148 | TP2: $155<br>
+Risk: $350 (1.5%) | Target: $1,120 (R:R 1:3.2)<br>
+<br>
+Scenarios: TP1 hit → +$700 · TP2 hit → +$1,120 · Stopped out → -$350<br>
+<br>
+Exit plan: Sell 50% at TP1, trail stop to breakeven, sell rest at TP2 or Apr 23 earnings.<br>
+<br>
+⏰ Signal valid ~4h · Earnings in 6 days → size reduced 50% (The Shield)<br>
+⚠️ Eleventh Man: heavily crowded trade, 3 similar setups failed Oct 2024.<br>
+<br>
+[✅ APPROVE] [❌ REJECT] [📄 FULL REPORT] [✏️ MODIFY SIZE] [⏸️ WAIT 1H]
+    </div>
+    <div style="margin-top:6px;font-size:7.5pt;color:#3a2a10;line-height:1.6">
+      <strong>Daily digest</strong> (9am ET): Open positions · Today's key events · Overnight news · Budget status · Pending approvals<br>
+      <strong>Sunday report</strong> (10am): Week's paper trades · Agent leaderboard · System Improvement Report · Upcoming week calendar
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══ V2 NEW AGENTS ═══ -->
+<div class="page-break"></div>
+<div class="section-title">V2 — New Agents</div>
+
+<!-- Research -->
+<div class="dept-header dept-research">
+  <span class="dept-icon">🔍</span>
+  <div><h2>RESEARCH — 3 New Agents</h2><div class="dept-meta">9 → 12 total</div></div>
+</div>
+<div class="agents-grid triple">
+
+  <div class="agent-card no-break">
+    <div class="new-badge">NEW V2·P3</div>
+    <div class="agent-name"><span class="agent-emoji">🎰</span> The Greek <span class="agent-id">the_greek</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · Every 1h + OpEx daily</span></div>
+    <div class="agent-row"><span class="label">Sources</span><span class="val">CBOE · Unusual Whales · Market Chameleon · yfinance options chain</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">options_flow · iv_rank · gex_levels · max_pain</span></div>
+    <div class="agent-power ap-amber">IV Rank · GEX (market maker price defense levels) · Max Pain · Options flow · Volatility skew. Feeds The Shield for position sizing and The Architect for timing.</div>
+  </div>
+
+  <div class="agent-card no-break">
+    <div class="new-badge">NEW V2·P4</div>
+    <div class="agent-name"><span class="agent-emoji">🗺️</span> The Cartographer <span class="agent-id">the_cartographer</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · Every 4h + daily summary</span></div>
+    <div class="agent-row"><span class="label">Sources</span><span class="val">Sector ETFs (XLF, XLK, XLE…) · Alpha Vantage · Finviz sector data</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">sector_rotation · relative_strength · leading_sector</span></div>
+    <div class="agent-power ap-amber">Tracks where institutional money flows between sectors. Catches rotation 2–3 days before it becomes obvious. Feeds The Architect on which sectors favor the trade.</div>
+  </div>
+
+  <div class="agent-card no-break">
+    <div class="new-badge">NEW V2·P2</div>
+    <div class="agent-name"><span class="agent-emoji">🧭</span> The Scout <span class="agent-id">the_scout</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Junior · Audit every 48h · Discovery weekly (Sun)</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">source_health_report · degraded_source_alert · new_source_candidate</span></div>
+    <div class="agent-power ap-amber">
+      <strong>AUDIT:</strong> Verifies all current data sources are healthy, accurate, not degraded. Catches a broken API before it contaminates decisions.<br>
+      <strong>DISCOVERY:</strong> Actively searches for new free/low-cost sources not yet in the system. Reports: source_name · type · what it provides · cost · which agent benefits · quality_score · ADD/MONITOR/SKIP.<br>
+      <em>Sacred rule: never proposes a source without verifying it works first.</em>
+    </div>
+  </div>
+
+</div>
+
+<!-- Analysis -->
+<div class="dept-header dept-analysis" style="margin-top:6mm">
+  <span class="dept-icon">📊</span>
+  <div><h2>ANALYSIS — 1 New Agent</h2><div class="dept-meta">5 → 6 total</div></div>
+</div>
+<div class="agents-grid single">
+  <div class="agent-card no-break">
+    <div class="new-badge">NEW V2·P2</div>
+    <div class="agent-name"><span class="agent-emoji">⛈️</span> The Storm <span class="agent-id">the_storm</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · Every 30 min (market hours) · 2h (off-hours)</span></div>
+    <div class="agent-row"><span class="label">Sources</span><span class="val">CBOE VIX · VVIX · MOVE Index (bond vol) · yfinance realized vol</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">vol_regime · vix_structure · regime_change · vol_alert</span></div>
+    <div class="agent-power ap-blue">VIX term structure (contango = calm, backwardation = panic) · VVIX ("fear of fear") · MOVE Index (bond vol leads equity vol by 24–48h) · Vol regime detection: low vol → trend-follow, high vol → fade moves. The Architect currently has no vol regime input — The Storm fixes this.</div>
+  </div>
+</div>
+
+<!-- Strategy -->
+<div class="dept-header dept-strategy" style="margin-top:6mm">
+  <span class="dept-icon">♟️</span>
+  <div><h2>STRATEGY — 1 New Agent</h2><div class="dept-meta">2 → 3 total</div></div>
+</div>
+<div class="agents-grid single">
+  <div class="agent-card no-break">
+    <div class="new-badge">NEW V2·P3</div>
+    <div class="agent-name"><span class="agent-emoji">🔮</span> The Oracle <span class="agent-id">the_oracle</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · On-demand after every Architect plan, before Boss verdict</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">scenario_simulation · scenario_probability · trade_adjustment_suggestion</span></div>
+    <div class="agent-power ap-purple">Runs 3–5 alternative market scenarios with probability estimates before every Boss decision. Example: "Fed surprises with hike" 12% → reduce size 50% · "S&P drops 5%" 8% → stop triggered at -$X · "Earnings miss" 25% → correlated position affected. Quantitative complement to The Eleventh Man's qualitative contrarian case.</div>
+  </div>
+</div>
+
+<!-- Learning -->
+<div class="dept-header dept-learning" style="margin-top:6mm">
+  <span class="dept-icon">🧪</span>
+  <div><h2>LEARNING — 1 New Agent</h2><div class="dept-meta">2 → 3 total</div></div>
+</div>
+<div class="agents-grid single">
+  <div class="agent-card no-break">
+    <div class="new-badge">NEW V2·P4</div>
+    <div class="agent-name"><span class="agent-emoji">📖</span> The Librarian <span class="agent-id">the_librarian</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · Always listening · On-demand query from any agent</span></div>
+    <div class="agent-row"><span class="label">Storage</span><span class="val">ChromaDB (vector search) + SQLite (structured event log) — years of market history</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">historical_analogy · regime_match · context_package</span></div>
+    <div class="agent-power ap-purple">Narrative memory — not strategy backtests (that's The Historian). Example: "This combination of rising yields + tech outperformance last occurred Q1 2021 and Q3 2018. In 2021 it continued 6 weeks then reversed sharply. In 2018 it reversed in 10 days. Key difference: earnings season proximity." Feeds The Eleventh Man and The Boss.</div>
+  </div>
+</div>
+
+<!-- Special + Meta -->
+<div class="page-break"></div>
+
+<div class="dept-header dept-special">
+  <span class="dept-icon">🎭</span>
+  <div><h2>SPECIAL — 1 New Agent</h2><div class="dept-meta">2 → 3 total</div></div>
+</div>
+<div class="agents-grid single">
+  <div class="agent-card no-break">
+    <div class="new-badge">NEW V2·P3</div>
+    <div class="agent-name"><span class="agent-emoji">🃏</span> The Joker <span class="badge badge-special">ASYMMETRIC</span><span class="agent-id">the_joker</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · Every 8h (market hours) · Throttled 2nd after Maverick</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">asymmetric_idea · joker_play · lottery_ticket</span></div>
+    <div class="agent-power ap-blue">
+      <strong>Finds trades where max loss is small and upside is extreme (10×, 20×, 50×).</strong> OTM options before binary events · forgotten assets with hidden catalysts · structural mispricings the market has wrong.<br><br>
+      <strong>Different from Maverick:</strong> Maverick is creative and lateral. The Joker specifically targets extreme asymmetry — risk 1, reward 10-50.<br><br>
+      <strong>Required output fields:</strong> idea_name · thesis · the_edge · instrument · position_size (always max 1-2%) · trigger · max_loss · payout_scenario · asymmetry_ratio · crazy_score (1-10) · conviction (0-100)<br><br>
+      <em>Sacred rule: NEVER proposes a play without max_loss perfectly defined. The idea can be crazy, the risk management never is. The Boss sees these with label [JOKER PLAY].</em>
+    </div>
+  </div>
+</div>
+
+<div class="dept-header dept-meta-sys" style="margin-top:6mm">
+  <span class="dept-icon">⚙️</span>
+  <div><h2>META-SYSTEM — 2 New Agents</h2><div class="dept-meta">1 → 3 total (Tokin + Auditor + Questlog)</div></div>
+</div>
+<div class="agents-grid">
+
+  <div class="agent-card no-break" style="border-color:#2a1a0a">
+    <div class="new-badge" style="background:#2a1a0a">NEW V2·P2</div>
+    <div class="agent-name"><span class="agent-emoji">🔎</span> The Auditor <span class="badge badge-meta">META</span><span class="agent-id">the_auditor</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · Every 1h (market hours) · Daily summary</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">agent_health_report · contradiction_alert · loop_detected · underperforming_agent</span></div>
+    <div class="agent-power ap-dark">
+      Real-time system health monitor. Different from The Professor (which learns from trade outcomes) — The Auditor detects whether the system is <em>behaving correctly right now</em>.<br><br>
+      Detects: agent loops · signal contradictions between agents · drift (agent consistently wrong under specific conditions) · stale data (agent hasn't published in too long) · rolling 30-day signal quality score per agent. Alerts The Boss and The Messenger if critical.
+    </div>
+  </div>
+
+  <div class="agent-card no-break" style="border-color:#2a1a0a">
+    <div class="new-badge" style="background:#2a1a0a">NEW V2·P2</div>
+    <div class="agent-name"><span class="agent-emoji">📋</span> Questlog <span class="badge badge-meta">META</span><span class="agent-id">questlog</span></div>
+    <div class="agent-row"><span class="label">Role</span><span class="val">Senior · Always-on, event-driven</span></div>
+    <div class="agent-row"><span class="label">Bus</span><span class="val mono">xp_awarded · level_up_event · leaderboard_update · badge_earned · weekly_xp_summary</span></div>
+    <div class="agent-power ap-dark">
+      Gamification engine. Custom XP rules per agent type — a research agent earns XP differently than an execution agent. Manages levels (Intern→Legend), badges, skill trees, leaderboard.<br><br>
+      <strong>Also tracks Alfaro's XP:</strong> approved signals, reviewed reports, feedback given, consecutive paper trading days, first real trade.<br><br>
+      <strong>XP examples:</strong> Correct signal → Research agents earn · Contrarian case proved correct → Eleventh Man earns big · Budget saved → Tokin earns · Data corruption caught → Scout earns · [JOKER PLAY] that hits → Joker earns massive XP.<br><br>
+      Weekly Sunday XP summary included in The Messenger's weekly report.
+    </div>
+  </div>
+
+</div>
+
+
+<!-- FULL QUICK REFERENCE TABLE -->
+<div class="page-break"></div>
+<div class="section-title">Quick Reference — All 35 Agents (V1 + V2)</div>
+<div style="font-size:7pt;color:#7a6a50;margin-bottom:4mm">White = V1 · <span style="background:#fffbe6;padding:1px 4px">Yellow = V1 enhanced</span> · <span style="background:#fff5f5;padding:1px 4px;color:#c0392b">Red = V2 new agent</span> · Source of truth: <code>config/agents.json</code></div>
+
+<table class="ref">
+  <tr><th>#</th><th>Name</th><th>ID</th><th>Dept</th><th>Role</th><th>Schedule</th><th>Key Power / Update</th></tr>
+  <tr><td>1</td><td>🛰️ X-Ray</td><td class="mono-sm">x_ray</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>24/7</td><td>Political tweet → market impact</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Hashtag trending monitoring + trend velocity tracking</td></tr>
+  <tr><td>2</td><td>📅 The Scheduler</td><td class="mono-sm">the_scheduler</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>24/7</td><td>Global scheduled events</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ 90-day forward calendar · all event types (product launches, elections, FDA, conferences…)</td></tr>
+  <tr><td>3</td><td>📰 Headlines</td><td class="mono-sm">headlines</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>15m / 1h</td><td>Multi-order effect analysis</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ The Reporter sub-agent: activates for local sources by country/region (Milenio, FT, Caixin, etc.)</td></tr>
+  <tr><td>4</td><td>📈 Charts</td><td class="mono-sm">charts</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>5m / 1h</td><td>7 timeframes, always includes stop</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Strategy-aware analysis + "The Rule" non-negotiable condition integration</td></tr>
+  <tr><td>5</td><td>🧮 The Accountant</td><td class="mono-sm">the_accountant</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>4h / daily</td><td>Red flags checklist + DCF</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Personal finance dashboard for Alfaro (P&L, costs, ROI on the AI system)</td></tr>
+  <tr><td>6</td><td>🕸️ Cryptid</td><td class="mono-sm">cryptid</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>24/7</td><td>On-chain whale &amp; DeFi</td></tr>
+  <tr><td>7</td><td>🌍 Globe</td><td class="mono-sm">globe</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>24/7</td><td>DXY + macro regime</td></tr>
+  <tr><td>8</td><td>🦍 Ape</td><td class="mono-sm">ape</td><td><span class="dept-tag tag-research">research</span></td><td>Junior</td><td>30m / 2h</td><td>Retail sentiment (contrarian at extremes)</td></tr>
+  <tr><td>9</td><td>🕵️ Recon</td><td class="mono-sm">recon</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>1h / 4h</td><td>Smart money hierarchy</td></tr>
+  <tr class="new-row"><td>10</td><td>🎰 The Greek <span class="new-tag">V2·P3</span></td><td class="mono-sm">the_greek</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>1h</td><td>IV rank · GEX · Max pain · Options flow</td></tr>
+  <tr class="new-row"><td>11</td><td>🗺️ The Cartographer <span class="new-tag">V2·P4</span></td><td class="mono-sm">the_cartographer</td><td><span class="dept-tag tag-research">research</span></td><td>Senior</td><td>4h / daily</td><td>Sector rotation · Where money flows</td></tr>
+  <tr class="new-row"><td>12</td><td>🧭 The Scout <span class="new-tag">V2·P2</span></td><td class="mono-sm">the_scout</td><td><span class="dept-tag tag-research">research</span></td><td>Junior</td><td>48h audit · weekly discovery</td><td>Source quality auditor + new source finder</td></tr>
+  <tr><td>13</td><td>💎 Mood Ring</td><td class="mono-sm">mood_ring</td><td><span class="dept-tag tag-analysis">analysis</span></td><td>Lead</td><td>15m</td><td>Unified sentiment + divergences</td></tr>
+  <tr><td>14</td><td>⭐ Pattern Master</td><td class="mono-sm">pattern_master</td><td><span class="dept-tag tag-analysis">analysis</span></td><td>Senior</td><td>15m</td><td>Scored setups</td></tr>
+  <tr><td>15</td><td>🐂 Bull</td><td class="mono-sm">bull</td><td><span class="dept-tag tag-analysis">analysis</span></td><td>Senior</td><td>On-demand</td><td>Strongest buy case</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Daily system improvement debate + weekly all-agent forum → Scribe System Improvement Report</td></tr>
+  <tr><td>16</td><td>🐻 Bear</td><td class="mono-sm">bear</td><td><span class="dept-tag tag-analysis">analysis</span></td><td>Senior</td><td>On-demand</td><td>Strongest sell/skip case</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Daily system improvement debate + weekly all-agent forum</td></tr>
+  <tr><td>17</td><td>🌉 The Bridge</td><td class="mono-sm">the_bridge</td><td><span class="dept-tag tag-analysis">analysis</span></td><td>Senior</td><td>30m</td><td>Broken correlation = alpha signal</td></tr>
+  <tr class="new-row"><td>18</td><td>⛈️ The Storm <span class="new-tag">V2·P2</span></td><td class="mono-sm">the_storm</td><td><span class="dept-tag tag-analysis">analysis</span></td><td>Senior</td><td>30m / 2h</td><td>Vol regime · VIX structure · MOVE index</td></tr>
+  <tr><td>19</td><td>🏛️ The Architect</td><td class="mono-sm">the_architect</td><td><span class="dept-tag tag-strategy">strategy</span></td><td>Lead</td><td>4h / on-demand</td><td>Moderates debate, builds trade plan</td></tr>
+  <tr><td>20</td><td>✍️ The Scribe</td><td class="mono-sm">the_scribe</td><td><span class="dept-tag tag-strategy">strategy</span></td><td>Senior</td><td>After plan</td><td>Visual reports PDF + PPT</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Weekly System Improvement Report from all-agent forum</td></tr>
+  <tr class="new-row"><td>21</td><td>🔮 The Oracle <span class="new-tag">V2·P3</span></td><td class="mono-sm">the_oracle</td><td><span class="dept-tag tag-strategy">strategy</span></td><td>Senior</td><td>On-demand</td><td>3–5 scenario simulations before Boss decides</td></tr>
+  <tr><td>22</td><td>🛡️ The Shield</td><td class="mono-sm">the_shield</td><td><span class="dept-tag tag-decision">decision</span></td><td>Lead</td><td>Every trade</td><td>⚠️ HARD VETO</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Per-strategy risk profile customization (strategy-specific stop rules, heat limits, frequency)</td></tr>
+  <tr><td>23</td><td>👔 The Boss</td><td class="mono-sm">the_boss</td><td><span class="dept-tag tag-decision">decision</span></td><td>Lead</td><td>After Shield</td><td>Final AI verdict</td></tr>
+  <tr><td>24</td><td>📲 The Messenger</td><td class="mono-sm">the_messenger</td><td><span class="dept-tag tag-decision">decision</span></td><td>Senior</td><td>24/7</td><td>Only WhatsApp agent</td></tr>
+  <tr class="mod-row"><td></td><td colspan="6" style="color:#b07800;font-size:7pt">+ Full message format: reasoning · dollar scenarios · exit plan · time sensitivity · Eleventh Man flag · WAIT 1H button</td></tr>
+  <tr><td>25</td><td>⚡ The Trigger</td><td class="mono-sm">the_trigger</td><td><span class="dept-tag tag-execution">execution</span></td><td>Lead</td><td>On-approval</td><td>Human-approved execution only</td></tr>
+  <tr><td>26</td><td>🐕 The Watchdog</td><td class="mono-sm">the_watchdog</td><td><span class="dept-tag tag-execution">execution</span></td><td>Senior</td><td>24/7</td><td>Real-time position monitoring</td></tr>
+  <tr><td>27</td><td>📚 The Historian</td><td class="mono-sm">the_historian</td><td><span class="dept-tag tag-learning">learning</span></td><td>Lead</td><td>Daily</td><td>Quantitative backtests</td></tr>
+  <tr><td>28</td><td>🎓 The Professor</td><td class="mono-sm">the_professor</td><td><span class="dept-tag tag-learning">learning</span></td><td>Senior</td><td>After trade</td><td>Adjusts weights · Leaderboard</td></tr>
+  <tr class="new-row"><td>29</td><td>📖 The Librarian <span class="new-tag">V2·P4</span></td><td class="mono-sm">the_librarian</td><td><span class="dept-tag tag-learning">learning</span></td><td>Senior</td><td>Always-on</td><td>Narrative memory · "This happened in 2020…"</td></tr>
+  <tr><td>30</td><td>🎭 The Eleventh Man</td><td class="mono-sm">the_eleventh_man</td><td><span class="dept-tag tag-special">special</span></td><td>Senior</td><td>After Scribe</td><td>⚠️ Mandatory contrarian</td></tr>
+  <tr><td>31</td><td>🎲 Maverick</td><td class="mono-sm">maverick</td><td><span class="dept-tag tag-special">special</span></td><td>Junior</td><td>4h</td><td>Creative lateral ideas</td></tr>
+  <tr class="new-row"><td>32</td><td>🃏 The Joker <span class="new-tag">V2·P3</span></td><td class="mono-sm">the_joker</td><td><span class="dept-tag tag-special">special</span></td><td>Senior</td><td>8h</td><td>Extreme asymmetry plays — risk 1, reward 10-50×</td></tr>
+  <tr><td>33</td><td>💰 Tokin</td><td class="mono-sm">tokin</td><td><span class="dept-tag tag-meta">meta</span></td><td>Lead</td><td>24/7 sidecar</td><td>⚠️ VETO all LLM calls over budget</td></tr>
+  <tr class="new-row"><td>34</td><td>🔎 The Auditor <span class="new-tag">V2·P2</span></td><td class="mono-sm">the_auditor</td><td><span class="dept-tag tag-meta">meta</span></td><td>Senior</td><td>1h / daily</td><td>System health · loops · contradictions · drift</td></tr>
+  <tr class="new-row"><td>35</td><td>📋 Questlog <span class="new-tag">V2·P2</span></td><td class="mono-sm">questlog</td><td><span class="dept-tag tag-meta">meta</span></td><td>Senior</td><td>Always-on</td><td>XP engine for all 35 agents + Alfaro</td></tr>
+</table>
+
+<div style="margin-top:6mm;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+  <div style="background:white;border:1.5px solid #d4c8a8;border-radius:8px;padding:9px 12px;font-size:8pt">
+    <strong style="display:block;margin-bottom:5px">V2 Build Phases</strong>
+    <div style="line-height:2">
+      <span style="background:#27ae60;color:white;padding:1px 6px;border-radius:3px;font-size:7pt;font-weight:700">PHASE 1</span> Build all 26 V1 agents · Paper trade 30+ days<br>
+      <span style="background:#c0392b;color:white;padding:1px 6px;border-radius:3px;font-size:7pt;font-weight:700">PHASE 2</span> The Storm · The Scout · The Auditor · Questlog<br>
+      <span style="background:#c0392b;color:white;padding:1px 6px;border-radius:3px;font-size:7pt;font-weight:700">PHASE 3</span> The Greek · The Oracle · The Joker<br>
+      <span style="background:#c0392b;color:white;padding:1px 6px;border-radius:3px;font-size:7pt;font-weight:700">PHASE 4</span> The Cartographer · The Librarian
+    </div>
+  </div>
+  <div style="background:white;border:1.5px solid #d4c8a8;border-radius:8px;padding:9px 12px;font-size:8pt">
+    <strong style="display:block;margin-bottom:5px">V2 Department Count Changes</strong>
+    <table style="width:100%;border-collapse:collapse;font-size:7.5pt">
+      <tr><td style="padding:2px 4px">Research</td><td>9 → <strong>12</strong></td><td style="padding:2px 4px">Strategy</td><td>2 → <strong>3</strong></td></tr>
+      <tr style="background:#fdfaf4"><td style="padding:2px 4px">Analysis</td><td>5 → <strong>6</strong></td><td style="padding:2px 4px">Learning</td><td>2 → <strong>3</strong></td></tr>
+      <tr><td style="padding:2px 4px">Special</td><td>2 → <strong>3</strong></td><td style="padding:2px 4px">Meta</td><td>1 → <strong>3</strong></td></tr>
+      <tr style="background:#2a1a0a;color:#f5e8c8"><td style="padding:3px 4px;font-weight:700" colspan="2">TOTAL</td><td style="padding:3px 4px;font-weight:700" colspan="2">26 → 35</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="footer-note">
+  TradingAICenter · Agent Roster V2 · 35 agents total · Source of truth: config/agents.json<br>
+  V1 = 26 (build first) · V2 = +9 new agents across 4 phases · 8 V1 agents enhanced<br>
+  Generated 2026-04-15 · ljalfaro555@gmail.com
+</div>
+
+</body>
+</html>

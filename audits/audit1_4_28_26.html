@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradingAICenter — Audit #1 · Apr 28, 2026</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --blue: #58a6ff;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --green-bg: #0d2818;
+      --red-bg: #2d1117;
+      --yellow-bg: #271d00;
+      --blue-bg: #0c1f3d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      background: var(--surface);
+      margin-bottom: 2rem;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header h1 { font-size: 1.5rem; color: var(--blue); }
+    .header .subtitle { color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .badge-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid #1f4080; }
+    .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid #1a4a2a; }
+    .badge-yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid #4a3a00; }
+
+    /* Summary cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .card .label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .card .value { font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; }
+    .card .detail { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+    .green { color: var(--green); }
+    .red { color: var(--red); }
+    .yellow { color: var(--yellow); }
+    .blue { color: var(--blue); }
+    .purple { color: var(--purple); }
+
+    /* Sections */
+    section { margin-bottom: 2rem; }
+    section h2 {
+      font-size: 1.1rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      background: var(--surface2);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    /* Status pills */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill-green { background: var(--green-bg); color: var(--green); }
+    .pill-red   { background: var(--red-bg);   color: var(--red);   }
+    .pill-yellow{ background: var(--yellow-bg); color: var(--yellow);}
+    .pill-blue  { background: var(--blue-bg);   color: var(--blue);  }
+    .pill-gray  { background: #1c2128; color: var(--muted); }
+
+    /* Bug cards */
+    .bug-card {
+      background: var(--surface);
+      border: 1px solid #4a1a1a;
+      border-left: 4px solid var(--red);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .bug-card h3 { font-size: 0.95rem; color: var(--red); margin-bottom: 0.4rem; }
+    .bug-card p { font-size: 0.875rem; color: var(--muted); margin-bottom: 0.5rem; }
+    .bug-card .fix {
+      background: var(--green-bg);
+      border: 1px solid #1a4a2a;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+    }
+    .bug-card .fix .fix-label { font-size: 0.75rem; color: var(--green); font-weight: 700; margin-bottom: 0.3rem; }
+    .bug-card .fix code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    /* Next steps */
+    .phase {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .phase-header {
+      padding: 0.75rem 1rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .phase-header h3 { font-size: 0.95rem; font-weight: 700; }
+    .phase-body { padding: 0.75rem 0; }
+    .task {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+    }
+    .task:hover { background: rgba(255,255,255,0.02); }
+    .task-num {
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+    .task-content { flex: 1; }
+    .task-title { font-size: 0.875rem; color: var(--text); }
+    .task-detail { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+
+    /* Agent progress bar */
+    .progress-wrap { margin: 0.75rem 0; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .progress-bar {
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+    }
+
+    /* Timeline */
+    .timeline { padding-left: 1rem; }
+    .tl-item {
+      position: relative;
+      padding: 0.4rem 0 0.4rem 1.5rem;
+      border-left: 2px solid var(--border);
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 0.7rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .tl-item.done::before { background: var(--green); }
+    .tl-item.active::before { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+    .tl-item.pending::before { background: var(--surface2); border: 2px solid var(--border); }
+    .tl-week { font-size: 0.85rem; font-weight: 700; }
+    .tl-detail { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+
+    code.inline {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      color: var(--orange);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>TradingAICenter — Project Audit #1</h1>
+        <div class="subtitle">April 28, 2026 · End of Week 2 / Start of Week 3</div>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <span class="badge badge-blue">Week 2 Complete</span>
+        <span class="badge badge-yellow">Week 3 In Progress</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="summary-grid">
+    <div class="card">
+      <div class="label">Agents Coded</div>
+      <div class="value green">3</div>
+      <div class="detail">of 26 V1 agents</div>
+    </div>
+    <div class="card">
+      <div class="label">Infrastructure</div>
+      <div class="value green">100%</div>
+      <div class="detail">All 4 Docker services up</div>
+    </div>
+    <div class="card">
+      <div class="label">Known Bugs</div>
+      <div class="value red">2</div>
+      <div class="detail">Blocking end-to-end test</div>
+    </div>
+    <div class="card">
+      <div class="label">Week 3 Tasks</div>
+      <div class="value yellow">10</div>
+      <div class="detail">to close the pipeline</div>
+    </div>
+    <div class="card">
+      <div class="label">Est. Monthly Cost</div>
+      <div class="value blue">$0</div>
+      <div class="detail">No LLM calls yet</div>
+    </div>
+  </div>
+
+  <!-- Build Timeline -->
+  <section>
+    <h2>📅 Build Timeline</h2>
+    <div class="timeline">
+      <div class="tl-item done">
+        <div class="tl-week">✅ Week 1 — Foundations <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(complete)</span></div>
+        <div class="tl-detail">Claw-Empire cloned · 6 departments remapped · Terraria aesthetic applied · Docker stack first run</div>
+      </div>
+      <div class="tl-item done">
+        <div class="tl-week">✅ Week 2 — Python Brain <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(complete · Apr 20)</span></div>
+        <div class="tl-detail">FastAPI + Redis + ChromaDB · Knowledge Bus live · 3 agents coded · UI bridge created · Full stack running</div>
+      </div>
+      <div class="tl-item active">
+        <div class="tl-week">🔄 Week 3 — Full Analysis Pipeline <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(in progress · as of Apr 21)</span></div>
+        <div class="tl-detail">Bull/Bear debate · The Architect synthesis · The Scribe reports · WhatsApp approval flow</div>
+      </div>
+      <div class="tl-item pending">
+        <div class="tl-week" style="color:var(--muted);">Week 4 — Demo Quality</div>
+        <div class="tl-detail">Carrion aesthetic · TradingView charts · Alpaca paper trading · All 26 agents · CEO Chat · Gamification</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Infrastructure Status -->
+  <section>
+    <h2>🐳 Infrastructure Status</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Service</th><th>Status</th><th>Port</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Claw-Empire UI</strong><br><code class="inline">frontend/</code></td>
+            <td><span class="pill pill-green">✅ Running</span></td>
+            <td>8790</td>
+            <td>Runs via <code class="inline">tsx</code> from source — no compile needed</td>
+          </tr>
+          <tr>
+            <td><strong>Python Brain</strong><br><code class="inline">brain/</code></td>
+            <td><span class="pill pill-yellow">⚠️ Unhealthy</span></td>
+            <td>8791</td>
+            <td>App works but Docker healthcheck fails (<code class="inline">curl</code> not in slim image)</td>
+          </tr>
+          <tr>
+            <td><strong>Redis</strong></td>
+            <td><span class="pill pill-green">✅ Healthy</span></td>
+            <td>6379</td>
+            <td>Knowledge Bus pub/sub + cache</td>
+          </tr>
+          <tr>
+            <td><strong>ChromaDB</strong></td>
+            <td><span class="pill pill-green">✅ Running</span></td>
+            <td>8000</td>
+            <td>No healthcheck (v1 API deprecated, uses <code class="inline">service_started</code>)</td>
+          </tr>
+          <tr>
+            <td><strong>OpenClaw</strong></td>
+            <td><span class="pill pill-green">✅ Running</span></td>
+            <td>18789</td>
+            <td>WhatsApp gateway via Baileys · self-hosted · $0/month</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- What's Built -->
+  <section>
+    <h2>✅ What's Been Built</h2>
+
+    <h3 style="font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Brain Core Infrastructure</h3>
+    <div class="table-wrap" style="margin-bottom:1rem;">
+      <table>
+        <thead>
+          <tr><th>File</th><th>What It Does</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code class="inline">brain/config/settings.py</code></td>
+            <td>All env vars via pydantic-settings (ANTHROPIC_API_KEY, Redis, Chroma, Alpaca, budget)</td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr>
+            <td><code class="inline">brain/knowledge_bus/bus.py</code></td>
+            <td>Full Redis pub/sub backbone — message types, subscriptions, broadcast, direct messages</td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr>
+            <td><code class="inline">brain/agents/base.py</code></td>
+            <td>BaseAgent abstract class — all 26 agents inherit from this</td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr>
+            <td><code class="inline">brain/bridge/ui_bridge.py</code></td>
+            <td>HTTP client that POSTs agent status + bus events → Claw-Empire REST API</td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr>
+            <td><code class="inline">brain/memory/semantic.py</code></td>
+            <td>ChromaDB semantic memory client ("seen this before")</td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr>
+            <td><code class="inline">brain/main.py</code></td>
+            <td>FastAPI server + APScheduler + /health endpoint + agent orchestration loop</td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Frontend Bridge</h3>
+    <div class="table-wrap" style="margin-bottom:1rem;">
+      <table>
+        <thead>
+          <tr><th>File</th><th>Routes</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code class="inline">server/modules/routes/core/agents/brain-integration.ts</code></td>
+            <td>
+              <code class="inline">POST /api/brain/agent-status</code> — updates SQLite + WebSocket broadcast<br>
+              <code class="inline">POST /api/brain/bus-event</code> — broadcasts raw bus messages to UI clients
+            </td>
+            <td><span class="pill pill-yellow">⚠️ Created, untested live</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Agents</h3>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>V1 Agent Progress</span><span>3 / 26</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:11.5%"></div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Agent</th><th>Dept</th><th>File</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>📈 Charts</td>
+            <td>Research</td>
+            <td><code class="inline">brain/agents/charts.py</code></td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr>
+            <td>🛰️ X-Ray</td>
+            <td>Research</td>
+            <td><code class="inline">brain/agents/xray.py</code></td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr>
+            <td>📅 The Scheduler</td>
+            <td>Research</td>
+            <td><code class="inline">brain/agents/scheduler_agent.py</code></td>
+            <td><span class="pill pill-green">✅ Done</span></td>
+          </tr>
+          <tr style="opacity:0.5;">
+            <td colspan="3" style="color:var(--muted);font-size:0.8rem;">📰 Headlines · 🧮 The Accountant · 🕸️ Cryptid · 🌍 Globe · 🦍 Ape · 🕵️ Recon · 💎 Mood Ring · ⭐ Pattern Master · 🐂 Bull · 🐻 Bear · 🌉 The Bridge · 🏛️ The Architect · ✍️ The Scribe · 🛡️ The Shield · 👔 The Boss · 📲 The Messenger · ⚡ The Trigger · 🐕 The Watchdog · 📚 The Historian · 🎓 The Professor · 🎭 The Eleventh Man · 🎲 Maverick · 💰 Tokin</td>
+            <td><span class="pill pill-gray">Not started</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Bugs -->
+  <section>
+    <h2>🔴 Known Bugs</h2>
+
+    <div class="bug-card">
+      <h3>Bug #1 — trading-brain Docker healthcheck always UNHEALTHY</h3>
+      <p>The healthcheck command uses <code class="inline">curl</code>, which is not installed in the <code class="inline">python:3.11-slim</code> base image. The brain app itself runs fine on port 8791 — the healthcheck is just wrong.</p>
+      <div class="fix">
+        <div class="fix-label">FIX — Change in frontend/docker-compose.yml:</div>
+        <code>healthcheck:
+  test: ["CMD", "python3", "-c",
+    "import urllib.request; urllib.request.urlopen('http://localhost:8791/health')"]
+  interval: 15s
+  timeout: 5s
+  retries: 5</code>
+      </div>
+    </div>
+
+    <div class="bug-card">
+      <h3>Bug #2 — /api/brain/agent-status route never live-tested</h3>
+      <p>The <code class="inline">brain-integration.ts</code> file was created Apr 21 but the Docker image rebuilt from cached layers that session — the route returned 404. Since claw-empire runs via <code class="inline">tsx</code> directly from source, a container restart should pick it up — but it's never been confirmed working end-to-end.</p>
+      <div class="fix">
+        <div class="fix-label">FIX — After fixing bug #1, restart claw-empire and test:</div>
+        <code>cd frontend && docker-compose restart claw-empire
+# Then test:
+curl -X POST http://localhost:8790/api/brain/agent-status \
+  -H "Authorization: Bearer &lt;API_AUTH_TOKEN&gt;" \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id":"charts","status":"working","current_task":"Fetching NVDA data"}'</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Next Steps -->
+  <section>
+    <h2>🔄 Week 3 — Next Implementation Tasks</h2>
+
+    <div class="phase">
+      <div class="phase-header">
+        <h3>🔧 Immediate Fixes (do first)</h3>
+        <span class="badge badge-red" style="background:var(--red-bg);color:var(--red);border:1px solid #4a1a1a;">~30 min</span>
+      </div>
+      <div class="phase-body">
+        <div class="task">
+          <div class="task-num">1</div>
+          <div class="task-content">
+            <div class="task-title">Fix trading-brain healthcheck in <code class="inline">docker-compose.yml</code></div>
+            <div class="task-detail">Replace <code class="inline">curl</code> with Python urllib — curl not in python:3.11-slim</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">2</div>
+          <div class="task-content">
+            <div class="task-title">Test Brain → UI bridge end-to-end</div>
+            <div class="task-detail">Restart claw-empire, hit <code class="inline">/api/brain/agent-status</code> with Bearer token, confirm pixel office updates</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">3</div>
+          <div class="task-content">
+            <div class="task-title">Seed all 26 agents into Claw-Empire SQLite</div>
+            <div class="task-detail">Without DB seed, the pixel trading floor shows no agents — all bridge calls return <code class="inline">matched: false</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <h3>📡 Research Agents (remaining 6)</h3>
+        <span class="badge badge-blue">Dept 1</span>
+      </div>
+      <div class="phase-body">
+        <div class="task">
+          <div class="task-num">4</div>
+          <div class="task-content">
+            <div class="task-title">🕸️ Cryptid — on-chain crypto agent</div>
+            <div class="task-detail">CoinGecko + CoinGlass + DeFi Llama · no LLM needed · pure data fetching · 24/7 skeleton crew</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">5</div>
+          <div class="task-content">
+            <div class="task-title">🌍 Globe — Forex + macro agent</div>
+            <div class="task-detail">FRED API + yfinance (DXY) · no LLM needed · 24/7 skeleton crew</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">6</div>
+          <div class="task-content">
+            <div class="task-title">📰 Headlines, 🦍 Ape, 🕵️ Recon, 🧮 The Accountant</div>
+            <div class="task-detail">Use LLM for analysis · wire to Knowledge Bus · follow BaseAgent pattern</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <h3>📊 Analysis Agents (5)</h3>
+        <span class="badge badge-blue">Dept 2</span>
+      </div>
+      <div class="phase-body">
+        <div class="task">
+          <div class="task-num">7</div>
+          <div class="task-content">
+            <div class="task-title">💎 Mood Ring, ⭐ Pattern Master, 🌉 The Bridge</div>
+            <div class="task-detail">Subscribe to Research output on Knowledge Bus · produce analysis scores</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">8</div>
+          <div class="task-content">
+            <div class="task-title">🐂 Bull + 🐻 Bear debate pipeline</div>
+            <div class="task-detail">On-demand agents · trigger on new analysis · 2–5 debate rounds via Knowledge Bus messages</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <h3>♟️ Strategy → Decision → Approval Flow</h3>
+        <span class="badge badge-blue">Depts 3–4</span>
+      </div>
+      <div class="phase-body">
+        <div class="task">
+          <div class="task-num">9</div>
+          <div class="task-content">
+            <div class="task-title">🏛️ The Architect — trade plan synthesis</div>
+            <div class="task-detail">Reads Bull/Bear debate + all analysis · produces structured trade plan · max 5 concurrent trades</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">10</div>
+          <div class="task-content">
+            <div class="task-title">✍️ The Scribe — report generation</div>
+            <div class="task-detail">Takes Architect's plan → produces visual HTML/PDF report · progressive depth structure</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">11</div>
+          <div class="task-content">
+            <div class="task-title">🛡️ The Shield + 👔 The Boss</div>
+            <div class="task-detail">Shield = hard risk veto (2% per trade, 6% heat). Boss = final verdict STRONG BUY / BUY / HOLD / SKIP / SELL</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">12</div>
+          <div class="task-content">
+            <div class="task-title">📲 The Messenger → OpenClaw → WhatsApp</div>
+            <div class="task-detail">Wire The Messenger agent to OpenClaw port 18789 · send formatted trade signal · handle APPROVE / REJECT / MODIFY callbacks</div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-num">13</div>
+          <div class="task-content">
+            <div class="task-title">🎭 The Eleventh Man — mandatory contrarian</div>
+            <div class="task-detail">Runs between Scribe and Boss · always argues opposite of consensus · output appended to report</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Week 4 Preview -->
+  <section>
+    <h2>📋 Week 4 — Preview</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Task</th><th>Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Carrion aesthetic trigger — floor darkens + red pulse when trade found</td><td><span class="pill pill-yellow">High</span></td></tr>
+          <tr><td>TradingView charts with agent overlays (entry/exit markers)</td><td><span class="pill pill-yellow">High</span></td></tr>
+          <tr><td>Alpaca paper trading live (The Trigger + The Watchdog)</td><td><span class="pill pill-yellow">High</span></td></tr>
+          <tr><td>💰 Tokin budget enforcement sidecar</td><td><span class="pill pill-yellow">High</span></td></tr>
+          <tr><td>Remaining agents: 📚 Historian · 🎓 Professor · 🎲 Maverick · ⚡ Trigger · 🐕 Watchdog</td><td><span class="pill pill-blue">Medium</span></td></tr>
+          <tr><td>CEO Chat / click-to-talk with individual agents</td><td><span class="pill pill-blue">Medium</span></td></tr>
+          <tr><td>XP gamification — Questlog (V2 agent)</td><td><span class="pill pill-gray">Low</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    TradingAICenter Audit #1 · Generated Apr 28, 2026 · Next audit recommended after Week 3 closes
+  </footer>
+
+</div>
+</body>
+</html>

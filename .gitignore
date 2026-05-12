@@ -12,6 +12,7 @@ build/
 # Environment & secrets
 .env
 .env.*
+.env.docker.private
 *.key
 secrets.json
 
@@ -32,3 +33,6 @@ desktop.ini
 
 # Docker
 docker-compose.override.yml
+
+# Claude Code machine-local settings (per-user permission allowlists)
+.claude/settings.local.json

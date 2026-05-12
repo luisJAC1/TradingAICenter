@@ -1,0 +1,17 @@
+{
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": false,
+    "claude-code-setup@claude-plugins-official": false,
+    "playwright@claude-plugins-official": false,
+    "code-review@claude-plugins-official": false,
+    "claude-md-management@claude-plugins-official": false
+  },
+  "deniedMcpServers": [
+    { "serverName": "claude_ai_Canva" },
+    { "serverName": "claude_ai_Booking_com" },
+    { "serverName": "claude_ai_Tripadvisor" },
+    { "serverName": "claude_ai_Uber_Eats" },
+    { "serverName": "claude_ai_Uber" },
+    { "serverName": "claude_ai_Notion" }
+  ]
+}

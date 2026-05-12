@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TradingAICenter — V1 Final Report</title>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e2a;
+    --border: #2a2e3d;
+    --border2: #3a3e52;
+    --text: #c8cfe0;
+    --text2: #8892aa;
+    --text3: #5a6278;
+    --heading: #e8edf8;
+    --accent: #e05c3a;
+    --accent2: #ff7a55;
+    --gold: #f0c040;
+    --green: #4ade80;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --teal: #2dd4bf;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    background: linear-gradient(135deg, #0d0f14 0%, #1a0e0a 40%, #0d1020 100%);
+    border-bottom: 1px solid var(--border2);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(224,92,58,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 100px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(96,165,250,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(224,92,58,0.15);
+    border: 1px solid rgba(224,92,58,0.4);
+    color: var(--accent2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--accent2); }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 600px;
+    margin-bottom: 32px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent2);
+    display: block;
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.3);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+  }
+  .status-badge::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ---- LAYOUT ---- */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .main { padding: 40px 40px 80px; max-width: 1100px; margin: 0 auto; }
+
+  /* ---- SECTIONS ---- */
+  .section { margin-bottom: 56px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    font-size: 22px;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--heading);
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .card-sm {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 6px;
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 10px;
+  }
+
+  /* ---- TABLES ---- */
+  .tbl-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--bg3);
+    color: var(--text2);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ---- TAGS ---- */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .tag-green { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+  .tag-red { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+  .tag-blue { background: rgba(96,165,250,0.1); color: var(--blue); border: 1px solid rgba(96,165,250,0.25); }
+  .tag-gold { background: rgba(240,192,64,0.1); color: var(--gold); border: 1px solid rgba(240,192,64,0.25); }
+  .tag-purple { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+  .tag-accent { background: rgba(224,92,58,0.12); color: var(--accent2); border: 1px solid rgba(224,92,58,0.3); }
+  .tag-teal { background: rgba(45,212,191,0.1); color: var(--teal); border: 1px solid rgba(45,212,191,0.25); }
+  .tag-gray { background: rgba(255,255,255,0.05); color: var(--text3); border: 1px solid var(--border); }
+
+  /* ---- CODE ---- */
+  pre, code {
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+  }
+  pre {
+    background: #0a0b10;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 12px;
+    color: #a8b4c8;
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+  code {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 12px;
+    color: var(--teal);
+  }
+
+  /* ---- SIGNAL FLOW ---- */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .flow-step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+  .flow-step::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: -20px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border2), transparent);
+  }
+  .flow-step:last-child::before { display: none; }
+  .flow-dot {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 2px solid var(--border2);
+    background: var(--bg3);
+    position: relative;
+    z-index: 1;
+  }
+  .flow-body { padding-bottom: 28px; padding-top: 8px; flex: 1; }
+  .flow-title { font-size: 14px; font-weight: 700; color: var(--heading); margin-bottom: 4px; }
+  .flow-desc { font-size: 13px; color: var(--text2); }
+
+  /* ---- UI GUIDE ---- */
+  .ui-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .ui-row:last-child { border-bottom: none; }
+  .ui-icon {
+    font-size: 22px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .ui-label { font-size: 14px; font-weight: 700; color: var(--heading); margin-bottom: 3px; }
+  .ui-desc { font-size: 13px; color: var(--text2); }
+
+  .callout {
+    background: rgba(224,92,58,0.08);
+    border: 1px solid rgba(224,92,58,0.25);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .callout strong { color: var(--accent2); }
+
+  .callout-green {
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-left: 3px solid var(--green);
+  }
+  .callout-blue {
+    background: rgba(96,165,250,0.06);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-left: 3px solid var(--blue);
+  }
+
+  .rule-list { list-style: none; }
+  .rule-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text);
+  }
+  .rule-list li:last-child { border-bottom: none; }
+  .rule-num {
+    width: 24px; height: 24px;
+    background: rgba(224,92,58,0.15);
+    border: 1px solid rgba(224,92,58,0.3);
+    color: var(--accent2);
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .dept-header {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--heading);
+  }
+  .dept-header span { color: var(--text3); font-size: 12px; font-weight: 400; margin-left: auto; }
+
+  .daily-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+  }
+  .daily-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .daily-steps { list-style: none; }
+  .daily-steps li {
+    display: flex;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 13px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .daily-steps li:last-child { border-bottom: none; }
+  .step-check {
+    color: var(--green);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  h2 { font-size: 18px; font-weight: 700; color: var(--heading); margin: 28px 0 14px; }
+  h3 { font-size: 15px; font-weight: 700; color: var(--heading); margin: 20px 0 10px; }
+  p { color: var(--text); font-size: 13px; margin-bottom: 10px; line-height: 1.65; }
+
+  /* ---- FOOTER ---- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">V1 Final Report · 2026-05-06</div>
+  <h1>TradingAI<span>Center</span></h1>
+  <p class="hero-sub">A 28-agent AI trading system. Fully built. Paper trading ready. You approve every trade.</p>
+  <div class="status-badge">ALL SYSTEMS READY — PAPER TRADING PHASE</div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-num">28</span>
+      <div class="hero-stat-label">AI Agents</div>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">6</span>
+      <div class="hero-stat-label">Departments</div>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">4</span>
+      <div class="hero-stat-label">Risk Layers</div>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">$0</span>
+      <div class="hero-stat-label">Real Money at Risk</div>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">100%</span>
+      <div class="hero-stat-label">Human Controlled</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- QUICK START -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🚀</div>
+      <div>
+        <div class="section-title">Quick Start</div>
+        <div class="section-desc">Everything you need to get running</div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <strong>All 5 API keys are set.</strong> The system is fully configured and ready. Run the command below, then open localhost:8790.
+    </div>
+
+    <pre>cd frontend && docker-compose up --build</pre>
+
+    <p>Watch the logs — Tokin boots first, then all 28 agents stagger online. When you see <code>28/28 agents online</code> open your browser.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Service</th><th>URL</th><th>Status</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>Claw-Empire UI</td><td><code>localhost:8790</code></td><td><span class="tag tag-green">✅ Ready</span></td><td>Your command center</td></tr>
+          <tr><td>Python Brain</td><td><code>localhost:8791</code></td><td><span class="tag tag-green">✅ Ready</span></td><td>28 agents + FastAPI</td></tr>
+          <tr><td>Redis</td><td>internal:6379</td><td><span class="tag tag-green">✅ Ready</span></td><td>Agent nervous system</td></tr>
+          <tr><td>ChromaDB</td><td>internal:8000</td><td><span class="tag tag-green">✅ Ready</span></td><td>Semantic memory</td></tr>
+          <tr><td>OpenClaw</td><td>internal:18789</td><td><span class="tag tag-green">✅ Ready</span></td><td>WhatsApp (opt-in)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- HOW TO USE THE UI -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🖥️</div>
+      <div>
+        <div class="section-title">How to Use the UI — Click by Click</div>
+        <div class="section-desc">localhost:8790 — every button, every screen</div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      The UI has two zones: the <strong>Sidebar</strong> (left — switches main views) and the <strong>Header Bar</strong> (top — opens modals on top of any view). The most important button is <strong>🧭 Pending Decisions</strong> in the header.
+    </div>
+
+    <h3>Sidebar Navigation (left column)</h3>
+    <p>Click the <strong>lobster CEO icon</strong> at the top to collapse/expand. The bottom of the sidebar shows live department status (e.g. <code>2/9 working</code>) and a green pulsing dot when connected.</p>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">🏢</div>
+        <div>
+          <div class="ui-label">Office</div>
+          <div class="ui-desc">Pixel art office scene powered by PixiJS. Your agents walk around their department rooms. Message deliveries animate across the screen in real time — little packages flying from Research to Analysis to Strategy. Each department has its own room. <strong>Click an agent sprite</strong> to open their detail panel. Leave this open on a monitor to watch the system breathe.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">👥</div>
+        <div>
+          <div class="ui-label">Agents</div>
+          <div class="ui-desc">Full roster of all 28 agents as cards. Each shows: emoji + name, department badge, current status (IDLE / WORKING / THINKING / SENDING / ERROR), last activity time. <strong>Click any agent card</strong> → opens Agent Detail panel (slides in from right) with their config, performance metrics, recent bus messages, and a <strong>"Run Now"</strong> button to manually trigger their cycle.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">📚</div>
+        <div>
+          <div class="ui-label">Library</div>
+          <div class="ui-desc">Skills library (Claw-Empire base feature). Less relevant for daily trading use, but contains agent skill definitions and custom skill creation.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">📊</div>
+        <div>
+          <div class="ui-label">Dashboard</div>
+          <div class="ui-desc">HQ overview. Top strip shows live HUD stats: total agents, how many are active right now, task completion rate. Below: department performance bars, agent leaderboard ranked by activity, mission log of recent system events. The <strong>"Start Mission"</strong> button creates a new task directly.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">📋</div>
+        <div>
+          <div class="ui-label">Tasks</div>
+          <div class="ui-desc">Kanban board: Planned → In Progress → Review → Done. Trade signals from the brain appear here as task cards. <strong>Click a task card</strong> to open the full detail view with sub-tasks, agent assignments, and history. Filter bar at top lets you filter by department or status.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px; border-bottom: none;">
+        <div class="ui-icon">⚙️</div>
+        <div>
+          <div class="ui-label">Settings</div>
+          <div class="ui-desc">Tabs: <strong>General</strong> (company name, CEO name, language EN/KO/JA/ZH, dark/light theme) · <strong>API</strong> (view configured providers) · <strong>Gateway</strong> (OpenClaw WhatsApp phone + enable/disable) · <strong>CLI</strong> (Claude Code settings) · <strong>OAuth</strong> (GitHub). <em>Risk profile and LLM budget are in .env.docker.private — not changeable from UI.</em></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 28px;">Header Bar Buttons (top strip — always visible)</h3>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">🧭</div>
+        <div>
+          <div class="ui-label">Pending Decisions <span class="tag tag-accent" style="margin-left: 6px;">MOST IMPORTANT</span></div>
+          <div class="ui-desc">Shows a number badge when trade signals are waiting. Click to open the <strong>Decision Inbox modal</strong>. Each item shows which agent sent it, the full signal content, and <strong>numbered action buttons</strong>. Click the number to respond (e.g. <code>1. Approve</code> or <code>2. Reject</code>). The button shows "Sending..." while processing, then the item disappears. Has a <strong>Refresh</strong> button top-right and an <strong>"Open Chat"</strong> button per item to talk to the agent before deciding. Click outside or ✕ to close.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">👁</div>
+        <div>
+          <div class="ui-label">Agent Status</div>
+          <div class="ui-desc">Opens a live panel of all currently active agents — shows elapsed time, last action, CLI process info. You can <strong>stop a stuck agent</strong> from here. Hit Refresh inside to update.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">📋</div>
+        <div>
+          <div class="ui-label">Tasks (header shortcut)</div>
+          <div class="ui-desc">Quick shortcut to the task panel without switching the sidebar view.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px;">
+        <div class="ui-icon">📄</div>
+        <div>
+          <div class="ui-label">Report History</div>
+          <div class="ui-desc">History of past trade signals, closed positions, and Historian performance summaries.</div>
+        </div>
+      </div>
+      <div class="ui-row" style="padding: 14px 20px; border-bottom: none;">
+        <div class="ui-icon">🌙</div>
+        <div>
+          <div class="ui-label">Theme Toggle</div>
+          <div class="ui-desc">Switch dark ↔ light mode.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 28px;">The Decision Inbox — Step by Step</h3>
+    <div class="callout">
+      <strong>This is the only action you need to take daily.</strong> Everything else is automatic.
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-dot">1️⃣</div>
+        <div class="flow-body">
+          <div class="flow-title">See the badge increment</div>
+          <div class="flow-desc">The 🧭 button in the header shows a number (e.g. <code>🧭 1</code>). That means a Boss-approved trade signal is waiting for you.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">2️⃣</div>
+        <div class="flow-body">
+          <div class="flow-title">Click "Pending Decisions"</div>
+          <div class="flow-desc">The modal opens. You'll see a card for each pending item with the agent avatar, signal type, and timestamp.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">3️⃣</div>
+        <div class="flow-body">
+          <div class="flow-title">Read the signal content</div>
+          <div class="flow-desc">The box in the middle of each card shows the full signal: ticker, direction (LONG/SHORT), conviction %, entry price, stop-loss, TP1/TP2/TP3, risk %, thesis, and the Eleventh Man's counter-argument.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">4️⃣</div>
+        <div class="flow-body">
+          <div class="flow-title">Click a numbered option button</div>
+          <div class="flow-desc">At the bottom of the card you'll see buttons like <code>1. Approve</code>, <code>2. Reject</code>, maybe <code>3. Wait 1h</code>. Click the number for your choice. The button turns "Sending..." while it processes, then the item disappears from the inbox.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">5️⃣</div>
+        <div class="flow-body">
+          <div class="flow-title">(Optional) Talk to the agent first</div>
+          <div class="flow-desc">Each inbox item has an <strong>"Open Chat"</strong> button. Click it to open a direct chat with that agent and ask questions before deciding. The chat lets you type freely — the agent responds in context.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">✅</div>
+        <div class="flow-body">
+          <div class="flow-title">On Approve → Trigger executes the paper trade</div>
+          <div class="flow-desc">Trigger places a market order + GTC stop-loss via Alpaca paper trading. Watchdog picks up the position immediately and starts monitoring every 5 minutes. Historian logs it. The system is now tracking a live paper position.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue" style="margin-top: 24px;">
+      <strong>"No pending decisions right now"</strong> = agents haven't generated a signal yet, or all signals have been handled. The Architect runs every 4 hours. Check back later or watch the Office view to see when signals are building.<br><br>
+      <strong>"Options are being prepared..."</strong> = Boss is still scoring. Hit Refresh after 60 seconds.
+    </div>
+  </div>
+
+  <!-- SIGNAL FLOW -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div>
+        <div class="section-title">Signal Flow — Research to Your Inbox</div>
+        <div class="section-desc">How a market event becomes a trade signal in your inbox</div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-dot">🔍</div>
+        <div class="flow-body">
+          <div class="flow-title">Phase 1 — Research (9 agents, 15min–4h)</div>
+          <div class="flow-desc">Charts scans technicals every 15min. Headlines analyzes news impact every 15min. Globe monitors macro regime every 30min. Cryptid watches on-chain every 30min. Ape tracks Reddit sentiment every 30min. Recon finds unusual options activity every 1h. Accountant runs fundamentals every 4h. All results publish to the Redis Knowledge Bus.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">📊</div>
+        <div class="flow-body">
+          <div class="flow-title">Phase 2 — Analysis (5 agents, 15min + on-demand)</div>
+          <div class="flow-desc">Mood Ring fuses all research into a unified sentiment score (−100 to +100) every 15min. Pattern Master rates setups 1–5 stars every 15min. Bridge tracks correlation regime breaks every 30min. When Architect needs a debate, Bull and Bear are triggered on-demand to make the strongest case each way.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">🏗️</div>
+        <div class="flow-body">
+          <div class="flow-title">Phase 3 — Strategy (The Architect, 4h cycle)</div>
+          <div class="flow-desc">Scores candidates by: source count × confidence × pattern hit × mood hit. Requests Bull + Bear cases for top candidates (waits 45s for both). Claude synthesizes a trade plan — entry, stop, TPs, risk %, R:R, timeframe, full thesis, and plays the Eleventh Man internally before publishing. Scribe formats it for your inbox.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">🛡️</div>
+        <div class="flow-body">
+          <div class="flow-title">Phase 4 — Risk Gatekeeping (Shield → Eleventh Man → Boss)</div>
+          <div class="flow-desc">Shield runs 7 hard rules (no LLM, pure math): risk %, portfolio heat, plan count, duplicate ticker, correlated assets, pre-event flags. If it passes, Eleventh Man generates a mandatory contrarian counter-argument. Boss then scores 0–100 using conviction, stars, mood, regime, and R:R. Score 50–64 gets a Haiku LLM review. Score below 50 = SKIP.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">🧭</div>
+        <div class="flow-body">
+          <div class="flow-title">Phase 5 — Your Inbox (Messenger, 2h window)</div>
+          <div class="flow-desc">Messenger delivers the Boss-approved signal to your UI Decision Inbox (and optionally WhatsApp). You have 2 hours to approve or reject. Auto-cancels if no action.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">⚡</div>
+        <div class="flow-body">
+          <div class="flow-title">Phase 6 — Execution (Trigger + Watchdog)</div>
+          <div class="flow-desc">On your APPROVE: Trigger calculates position size (risk_dollars / stop_distance), places market order, places GTC stop immediately after. Watchdog picks it up and monitors every 5 minutes: stop hits, TP1/2/3 progression, flash crashes, emergency drawdown.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">📚</div>
+        <div class="flow-body">
+          <div class="flow-title">Phase 7 — Learning (Historian + Professor)</div>
+          <div class="flow-desc">Historian records every closed trade to SQLite: entry, exit, P&L, close_type, conviction, stars, mood score, regime, full plan JSON. Professor publishes weekly: agent leaderboard (who's signals win?), post-mortem (what worked, what failed, system suggestions).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL 28 AGENTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">👥</div>
+      <div>
+        <div class="section-title">All 28 Agents</div>
+        <div class="section-desc">Every agent, their role, schedule, and LLM usage</div>
+      </div>
+    </div>
+
+    <div class="dept-header">🔍 Department 1 — Research <span>9 agents · 15min–4h cycles</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Schedule</th><th>Role</th><th>Data Sources</th><th>LLM</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Charts</strong></td><td>15min</td><td>OHLCV + 20+ indicators (EMA, RSI, MACD, ATR, Bollinger), setup detection, stop/TP calculation</td><td>yfinance</td><td><span class="tag tag-gray">None</span></td></tr>
+          <tr><td><strong>Headlines</strong></td><td>15min</td><td>News impact analysis — 1st/2nd/3rd order effects, affected tickers, time horizon, impact score 1–10</td><td>yfinance news, Finnhub</td><td><span class="tag tag-blue">Haiku</span></td></tr>
+          <tr><td><strong>X-Ray</strong></td><td>30min</td><td>Political/macro news monitoring — tariffs, Fed, OPEC, regulatory changes, relevance scoring</td><td>Google News RSS</td><td><span class="tag tag-gray">None</span></td></tr>
+          <tr><td><strong>Cryptid</strong></td><td>30min</td><td>On-chain metrics, Fear & Greed Index, DeFi TVL, whale movements — BTC/ETH/SOL/XRP/ADA</td><td>CoinGecko, Alternative.me, DeFi Llama</td><td><span class="tag tag-gray">None</span></td></tr>
+          <tr><td><strong>Globe</strong></td><td>30min</td><td>Macro regime classification (RISK_ON / RISK_OFF / STAGFLATION / REFLATION), DXY, VIX, forex pairs</td><td>yfinance</td><td><span class="tag tag-gray">None</span></td></tr>
+          <tr><td><strong>Ape</strong></td><td>30min</td><td>Reddit sentiment across 5 subreddits — bullish/bearish scoring, contrarian signals at extremes</td><td>Reddit JSON API</td><td><span class="tag tag-gray">None</span></td></tr>
+          <tr><td><strong>Scheduler</strong></td><td>4h</td><td>Economic calendar, earnings, central bank meetings, crypto expiry — feeds Shield pre-event position halving</td><td>Finnhub Calendar</td><td><span class="tag tag-gray">None</span></td></tr>
+          <tr><td><strong>The Accountant</strong></td><td>4h</td><td>Fundamentals: P/E, P/B, ROE, FCF, D/E ratio, red flag detection (insider selling, revenue quality)</td><td>yfinance, SEC EDGAR</td><td><span class="tag tag-blue">Haiku</span></td></tr>
+          <tr><td><strong>Recon</strong></td><td>1h</td><td>Unusual options activity (vol/OI ≥ 5x), Form 4 insider filings, short squeeze candidates (ratio ≥ 10)</td><td>yfinance options, SEC EDGAR</td><td><span class="tag tag-gray">None</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dept-header" style="margin-top: 20px;">📊 Department 2 — Analysis <span>5 agents · 15min + on-demand</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Schedule</th><th>Role</th><th>LLM</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Mood Ring</strong></td><td>15min</td><td>Fuses all Dept 1 signals into unified sentiment score −100 to +100 with per-agent contributions, divergence alerts (smart money vs retail)</td><td><span class="tag tag-blue">Haiku</span></td></tr>
+          <tr><td><strong>Pattern Master</strong></td><td>15min</td><td>Rates technical setups 1–5 stars, enforces min R:R 1.5, returns entry/stop/TP1/TP2/TP3 per setup, only publishes ≥ 3 stars</td><td><span class="tag tag-blue">Haiku</span></td></tr>
+          <tr><td><strong>Bull</strong></td><td>On-demand</td><td>Generates strongest bullish case for any ticker — verdict, conviction, thesis, top reasons, price target, timeframe, key catalyst</td><td><span class="tag tag-purple">Sonnet</span></td></tr>
+          <tr><td><strong>Bear</strong></td><td>On-demand</td><td>Generates strongest bearish case — mirror of Bull, devil's advocate, downside target, key risk event</td><td><span class="tag tag-purple">Sonnet</span></td></tr>
+          <tr><td><strong>The Bridge</strong></td><td>30min</td><td>Tracks 7 correlation pairs (SPY/BTC, SPY/TLT, DXY/SPY, VIX/SPY, etc.), detects regime breaks when deviation > 2 std</td><td><span class="tag tag-blue">Haiku</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dept-header" style="margin-top: 20px;">🎯 Department 3 — Strategy <span>2 agents · 4h + on-demand</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Schedule</th><th>Role</th><th>LLM</th></tr></thead>
+        <tbody>
+          <tr><td><strong>The Architect</strong></td><td>4h</td><td>Scores candidates, requests Bull+Bear cases, waits 45s for both, synthesizes plan with internal Eleventh Man check, enforces hard risk limits, tracks max simultaneous plans</td><td><span class="tag tag-purple">Sonnet</span></td></tr>
+          <tr><td><strong>The Scribe</strong></td><td>On-demand</td><td>Formats Architect plan for your inbox — ticker, thesis, entry/stop/TPs, risk $, R:R, Eleventh Man counter, action buttons</td><td><span class="tag tag-gray">None</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dept-header" style="margin-top: 20px;">🛡️ Department 4 — Decision & Risk <span>3 agents · always-on</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Role</th><th>LLM</th></tr></thead>
+        <tbody>
+          <tr><td><strong>The Shield</strong></td><td>7-rule hard veto: risk %, portfolio heat, plan count, duplicate ticker, correlated assets, pre-event flag, position size halving. Zero LLM — pure math.</td><td><span class="tag tag-red">Never</span></td></tr>
+          <tr><td><strong>The Boss</strong></td><td>Scores 0–100: conviction (40pts) + pattern stars (20pts) + mood alignment (20pts) + regime (10pts) + R:R (10pts). 80+ = auto approve. 50–64 = Haiku review. Below 50 = skip.</td><td><span class="tag tag-blue">Haiku (borderline)</span></td></tr>
+          <tr><td><strong>The Messenger</strong></td><td>Delivers Boss-approved signals to UI inbox + optional WhatsApp. Manages 2h approval window with auto-cancel. Routes your APPROVE/REJECT/WAIT/MODIFY_SIZE back to Trigger.</td><td><span class="tag tag-red">Never</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dept-header" style="margin-top: 20px;">⚡ Department 5 — Execution <span>2 agents · always-on</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Schedule</th><th>Role</th><th>LLM</th></tr></thead>
+        <tbody>
+          <tr><td><strong>The Trigger</strong></td><td>On APPROVE only</td><td>Alpaca paper trading — market order for entry, GTC stop-loss immediately after. Position size = risk_dollars / stop_distance. Falls back to simulated 10k portfolio if no Alpaca key.</td><td><span class="tag tag-red">Never</span></td></tr>
+          <tr><td><strong>The Watchdog</strong></td><td>Every 5min, 24/7</td><td>Flash crash detection (>5% in 5min), stop hit, stop warning (within 20% of stop), TP1 hit (raises stop to breakeven), TP2 alert, TP3 auto-close, emergency drawdown forced close (>10% portfolio loss)</td><td><span class="tag tag-red">Never</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dept-header" style="margin-top: 20px;">📚 Department 6 — Learning <span>2 agents · 1h + 24h cycles</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Schedule</th><th>Role</th><th>LLM</th></tr></thead>
+        <tbody>
+          <tr><td><strong>The Historian</strong></td><td>1h</td><td>Records every closed trade to SQLite: ticker, direction, entry/exit, qty, P&L%, result, close_type, conviction, stars, mood score, regime, full plan JSON. Zero LLM — pure data.</td><td><span class="tag tag-red">Never</span></td></tr>
+          <tr><td><strong>The Professor</strong></td><td>24h</td><td>Weekly agent leaderboard (who's signals lead to wins), post-mortem analysis (what worked, what failed), system improvement suggestions. Throttled first by Tokin.</td><td><span class="tag tag-blue">Haiku</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dept-header" style="margin-top: 20px;">🎭 Special / Meta Agents <span>3 agents</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Schedule</th><th>Role</th><th>LLM</th></tr></thead>
+        <tbody>
+          <tr><td><strong>The Eleventh Man</strong></td><td>On-demand (every approved plan)</td><td>Mandatory contrarian — if everyone agrees, this agent MUST disagree. Conviction-based: &lt;65% = rule-based, 65–85% = Haiku, &gt;85% = Sonnet deep analysis. Counter lands in Boss's context before final verdict.</td><td><span class="tag tag-blue">Haiku</span> / <span class="tag tag-purple">Sonnet</span></td></tr>
+          <tr><td><strong>Maverick</strong></td><td>6h (if budget)</td><td>Lateral thinking — finds 2nd/3rd order connections others miss. High creativity (temperature 0.8). Throttled first by Tokin when budget tightens. Conviction honestly 0.3–0.6 (speculative).</td><td><span class="tag tag-blue">Haiku</span></td></tr>
+          <tr><td><strong>Tokin</strong></td><td>1h</td><td>Budget watchdog with hard VETO authority. Tracks monthly LLM spend. At 80%: throttles Maverick, publishes warning. At 100%: blocks ALL non-exempt LLM calls. Shield, Messenger, UIBridge are exempt.</td><td><span class="tag tag-red">Never</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RISK & COST -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💰</div>
+      <div>
+        <div class="section-title">Risk Profiles & LLM Cost Design</div>
+        <div class="section-desc">Configured in frontend/.env.docker.private — rebuild brain to apply</div>
+      </div>
+    </div>
+
+    <div class="card-grid" style="margin-bottom: 20px;">
+      <div class="card-sm">
+        <div class="card-title">CONSERVATIVE</div>
+        <div style="font-size: 12px; color: var(--text3); margin-bottom: 8px;">Low risk, fewer positions</div>
+        <div style="font-size: 13px; color: var(--text);">0.5% risk/trade · 3% max heat · 3 simultaneous plans</div>
+      </div>
+      <div class="card-sm" style="border-color: var(--accent2);">
+        <div class="card-title" style="color: var(--accent2);">BALANCED ← current</div>
+        <div style="font-size: 12px; color: var(--text3); margin-bottom: 8px;">Default — balanced risk</div>
+        <div style="font-size: 13px; color: var(--text);">1.0% risk/trade · 5% max heat · 5 simultaneous plans</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-title">AGGRESSIVE</div>
+        <div style="font-size: 12px; color: var(--text3); margin-bottom: 8px;">Higher risk, higher upside</div>
+        <div style="font-size: 13px; color: var(--text);">2.0% risk/trade · 6% max heat · 5 simultaneous plans</div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>Used For</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-blue">Haiku</span></td><td>Headlines, Accountant, Mood Ring, Pattern Master, Bridge, Boss borderline calls, Eleventh Man (mid-conviction), Professor</td><td>~$0.001/1K tokens</td></tr>
+          <tr><td><span class="tag tag-purple">Sonnet</span></td><td>Bull, Bear, The Architect synthesis, Eleventh Man high-conviction (&gt;85%)</td><td>~$0.009/1K tokens</td></tr>
+          <tr><td><span class="tag tag-gray">None</span></td><td>Shield, Trigger, Watchdog, Historian, Tokin, Scribe, Messenger — pure logic/data</td><td>$0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Prompt caching is enabled on all system messages (~90% cost reduction on repeated calls). Monthly target: $0–30. Hard cap enforced by Tokin at <code>MONTHLY_LLM_BUDGET_USD</code>.</p>
+  </div>
+
+  <!-- DAILY ROUTINE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📅</div>
+      <div>
+        <div class="section-title">Your Daily Routine</div>
+        <div class="section-desc">Paper trading phase — what to do and when</div>
+      </div>
+    </div>
+
+    <div class="daily-block">
+      <div class="daily-title">🌅 Morning (~5 minutes)</div>
+      <ul class="daily-steps">
+        <li><span class="step-check">→</span> Open <code>localhost:8790</code></li>
+        <li><span class="step-check">→</span> Check the 🧭 badge in the header — any overnight signals?</li>
+        <li><span class="step-check">→</span> Click Pending Decisions, read each signal thoroughly (thesis, Eleventh Man counter, risk sizing)</li>
+        <li><span class="step-check">→</span> Click APPROVE or REJECT — you're the human in the loop, always</li>
+        <li><span class="step-check">→</span> Check Agent Status panel — everything green?</li>
+      </ul>
+    </div>
+
+    <div class="daily-block">
+      <div class="daily-title">☀️ During the Day (passive — agents work automatically)</div>
+      <ul class="daily-steps">
+        <li><span class="step-check">→</span> Leave the Office view open on a monitor if you want to watch agents in real time</li>
+        <li><span class="step-check">→</span> Off-hours skeleton crew runs 24/7: X-Ray, Scheduler, Cryptid, Globe, Tokin, Watchdog, Messenger</li>
+        <li><span class="step-check">→</span> Watchdog checks all open positions every 5 minutes automatically — no action needed</li>
+        <li><span class="step-check">→</span> If a TP or stop is hit, Watchdog handles it and Historian records it</li>
+      </ul>
+    </div>
+
+    <div class="daily-block">
+      <div class="daily-title">📊 Weekly (~15 minutes)</div>
+      <ul class="daily-steps">
+        <li><span class="step-check">→</span> Open Report History (header button) — review closed trades</li>
+        <li><span class="step-check">→</span> Check Tokin's LLM spend report — should be well under $10/month</li>
+        <li><span class="step-check">→</span> Read Professor's agent leaderboard — which agents generate the best signals?</li>
+        <li><span class="step-check">→</span> Note patterns: win rate, average win vs loss, which close types are most common</li>
+      </ul>
+    </div>
+
+    <div class="daily-block">
+      <div class="daily-title">🏁 After 30 Days</div>
+      <ul class="daily-steps">
+        <li><span class="step-check">→</span> You'll have real signal quality data from Historian — enough to make decisions</li>
+        <li><span class="step-check">→</span> Consider tuning RISK_PROFILE (edit .env.docker.private → rebuild brain)</li>
+        <li><span class="step-check">→</span> Review V2 agent roster (Documentacion/AGENT_ROSTER_V2.html) — decide which to build</li>
+        <li><span class="step-check">→</span> Optionally: add Finnhub watchlist tickers, tune Alpaca paper portfolio size</li>
+        <li><span class="step-check">→</span> When satisfied with signal quality: consider enabling live trading (requires explicit decision)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- NON-NEGOTIABLES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔒</div>
+      <div>
+        <div class="section-title">The Seven Non-Negotiables</div>
+        <div class="section-desc">Design principles that will not change</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <ul class="rule-list">
+        <li><span class="rule-num">1</span><div><strong style="color: var(--heading);">Human approves every trade.</strong> AI recommends, you decide. The system cannot trade without your explicit click. Always.</div></li>
+        <li><span class="rule-num">2</span><div><strong style="color: var(--heading);">Knowledge Bus is the nervous system.</strong> No agent works in a silo. Every signal, debate, and veto flows through Redis so all agents share context.</div></li>
+        <li><span class="rule-num">3</span><div><strong style="color: var(--heading);">The Eleventh Man must be heard.</strong> Every high-conviction plan gets a mandatory contrarian challenge before Boss approval. Prevents groupthink.</div></li>
+        <li><span class="rule-num">4</span><div><strong style="color: var(--heading);">Paper trading first.</strong> 30+ days minimum before considering real money. No exceptions. LIVE_TRADING is hardlocked false in code.</div></li>
+        <li><span class="rule-num">5</span><div><strong style="color: var(--heading);">Tokin enforces the budget.</strong> No LLM call can bankrupt the system. Hard veto at 100% of monthly budget.</div></li>
+        <li><span class="rule-num">6</span><div><strong style="color: var(--heading);">UI first for notifications.</strong> WhatsApp is opt-in, not required. The Decision Inbox in the UI is always the primary channel.</div></li>
+        <li><span class="rule-num">7</span><div><strong style="color: var(--heading);">Zero LLM where logic suffices.</strong> Shield, Watchdog, Trigger, Historian, Tokin, Messenger, Scribe — pure code. LLM reserved for reasoning tasks only.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY FILES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📁</div>
+      <div>
+        <div class="section-title">Key Files</div>
+        <div class="section-desc">Navigate the codebase</div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>brain/main.py</code></td><td>FastAPI entry point — all 28 agents registered, APScheduler jobs, startup sequence, /health, /agents, /approval endpoints</td></tr>
+          <tr><td><code>brain/agents/base.py</code></td><td>BaseAgent — ask_claude (with prompt caching), publish, subscribe, set_status, Tokin veto hook</td></tr>
+          <tr><td><code>brain/agents/</code></td><td>All 28 individual agent files</td></tr>
+          <tr><td><code>brain/config/settings.py</code></td><td>All env vars, risk profile logic, model assignments (Haiku/Sonnet)</td></tr>
+          <tr><td><code>brain/knowledge_bus/bus.py</code></td><td>Redis pub/sub backbone — MessageCategory enum, BusMessage schema, publish/subscribe</td></tr>
+          <tr><td><code>brain/bridge/ui_bridge.py</code></td><td>Bus → UI REST — forwards trade signals and agent status to Claw-Empire</td></tr>
+          <tr><td><code>frontend/docker-compose.yml</code></td><td>Full stack definition — 5 services, ports, volumes, health checks, startup order</td></tr>
+          <tr><td><code>frontend/.env.docker.private</code></td><td>All API keys + RISK_PROFILE + MONTHLY_LLM_BUDGET_USD — never commit</td></tr>
+          <tr><td><code>frontend/data/brain/historian.db</code></td><td>SQLite trade log — every closed trade with full plan JSON (chmod 777 required)</td></tr>
+          <tr><td><code>Documentacion/AGENTS_REFERENCE.md</code></td><td>Full agent roster with roles and schedules</td></tr>
+          <tr><td><code>Documentacion/AGENT_ROSTER_V2.html</code></td><td>V2 plan — 35 agents (open in browser)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- V2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔮</div>
+      <div>
+        <div class="section-title">V2 Roadmap</div>
+        <div class="section-desc">After 30-day paper trading validation — 35 total agents</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      V2 begins only after the 30-day paper trading phase validates signal quality. Full details in <strong>Documentacion/AGENT_ROSTER_V2.html</strong>.
+    </div>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <div class="card-title">9 New Agents</div>
+        <div class="card-sub">Options flow, backtester, regime-aware sizer, and more</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-title">8 V1 Enhancements</div>
+        <div class="card-sub">Deeper analysis, better signal filtering, improved learning feedback</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-title">Full Gamification</div>
+        <div class="card-sub">Agent XP, system performance ranking, user XP progression</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-title">Agent-Can-Hire-Agents</div>
+        <div class="card-sub">Agents spawn sub-agents for specialized research tasks</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  TradingAICenter V1 · Built with discipline · Runs with intelligence · Controlled by you<br>
+  Owner: Alfaro (ljalfaro555@gmail.com) · Generated 2026-05-06
+</footer>
+
+</body>
+</html>

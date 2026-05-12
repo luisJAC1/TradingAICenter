@@ -1,0 +1,646 @@
+{
+  "_readme": "SINGLE SOURCE OF TRUTH for agent counts and roster info. Update this file when agents are added, removed, or moved. Both the frontend and Python brain should reference this file.",
+
+  "versions": {
+    "v1": {
+      "label": "V1 — Initial Implementation",
+      "total": 26,
+      "status": "current",
+      "notes": "All agents to be built in the 4-week roadmap. Paper trading phase."
+    },
+    "v2": {
+      "label": "V2 — Extended Roster",
+      "total": 35,
+      "status": "planned",
+      "notes": "9 additional agents added after V1 is stable and paper-trading proven. Also includes refinements to 8 existing V1 agents documented in v1_agent_modifications."
+    }
+  },
+
+  "departments": {
+    "research": {
+      "id": "research",
+      "name": "Research",
+      "name_es": "Investigación",
+      "icon": "🔍",
+      "color": "#5a7a42",
+      "theme": "Underground Jungle",
+      "agent_count_v1": 9,
+      "agent_count_v2": 12,
+      "schedule_note": "Mix of 24/7 and market-hours agents. Skeleton crew always active."
+    },
+    "analysis": {
+      "id": "analysis",
+      "name": "Analysis",
+      "name_es": "Análisis",
+      "icon": "📊",
+      "color": "#4a6a8a",
+      "theme": "Crystal Caves",
+      "agent_count_v1": 5,
+      "agent_count_v2": 6,
+      "schedule_note": "Runs during market hours. Triggered by Research outputs."
+    },
+    "strategy": {
+      "id": "strategy",
+      "name": "Strategy",
+      "name_es": "Estrategia",
+      "icon": "♟️",
+      "color": "#ae9871",
+      "theme": "Golden Dungeon",
+      "agent_count_v1": 2,
+      "agent_count_v2": 3,
+      "schedule_note": "On-demand and scheduled. Synthesizes Research + Analysis into trade plans."
+    },
+    "decision": {
+      "id": "decision",
+      "name": "Decision",
+      "name_es": "Decisión y Riesgo",
+      "icon": "⚖️",
+      "color": "#8a4a4a",
+      "theme": "Boss Chamber",
+      "agent_count_v1": 3,
+      "agent_count_v2": 3,
+      "schedule_note": "Runs on every trade plan. The Shield has hard veto power."
+    },
+    "execution": {
+      "id": "execution",
+      "name": "Execution",
+      "name_es": "Ejecución",
+      "icon": "⚡",
+      "color": "#ae6a42",
+      "theme": "Lihzahrd Temple",
+      "agent_count_v1": 2,
+      "agent_count_v2": 2,
+      "schedule_note": "The Trigger fires on human approval only. The Watchdog is 24/7."
+    },
+    "learning": {
+      "id": "learning",
+      "name": "Learning",
+      "name_es": "Aprendizaje",
+      "icon": "🧪",
+      "color": "#6a4a8a",
+      "theme": "Wizard Tower",
+      "agent_count_v1": 2,
+      "agent_count_v2": 3,
+      "schedule_note": "Runs off-hours and after every closed trade."
+    }
+  },
+
+  "agents_v1": [
+    {
+      "id": "x_ray",
+      "name": "X-Ray",
+      "emoji": "🛰️",
+      "department": "research",
+      "role": "senior",
+      "schedule": "24/7",
+      "skeleton_crew": true
+    },
+    {
+      "id": "the_scheduler",
+      "name": "The Scheduler",
+      "emoji": "📅",
+      "department": "research",
+      "role": "senior",
+      "schedule": "24/7",
+      "skeleton_crew": true
+    },
+    {
+      "id": "headlines",
+      "name": "Headlines",
+      "emoji": "📰",
+      "department": "research",
+      "role": "senior",
+      "schedule": "15min_market_1h_offhours",
+      "skeleton_crew": false
+    },
+    {
+      "id": "charts",
+      "name": "Charts",
+      "emoji": "📈",
+      "department": "research",
+      "role": "senior",
+      "schedule": "5min_market_1h_offhours",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_accountant",
+      "name": "The Accountant",
+      "emoji": "🧮",
+      "department": "research",
+      "role": "senior",
+      "schedule": "4h_market_daily_offhours",
+      "skeleton_crew": false
+    },
+    {
+      "id": "cryptid",
+      "name": "Cryptid",
+      "emoji": "🕸️",
+      "department": "research",
+      "role": "senior",
+      "schedule": "24/7",
+      "skeleton_crew": true
+    },
+    {
+      "id": "globe",
+      "name": "Globe",
+      "emoji": "🌍",
+      "department": "research",
+      "role": "senior",
+      "schedule": "24/7",
+      "skeleton_crew": true
+    },
+    {
+      "id": "ape",
+      "name": "Ape",
+      "emoji": "🦍",
+      "department": "research",
+      "role": "junior",
+      "schedule": "30min_market_2h_offhours",
+      "skeleton_crew": false
+    },
+    {
+      "id": "recon",
+      "name": "Recon",
+      "emoji": "🕵️",
+      "department": "research",
+      "role": "senior",
+      "schedule": "1h_market_4h_offhours",
+      "skeleton_crew": false
+    },
+    {
+      "id": "mood_ring",
+      "name": "Mood Ring",
+      "emoji": "💎",
+      "department": "analysis",
+      "role": "team_leader",
+      "schedule": "15min_market",
+      "skeleton_crew": false
+    },
+    {
+      "id": "pattern_master",
+      "name": "Pattern Master",
+      "emoji": "⭐",
+      "department": "analysis",
+      "role": "senior",
+      "schedule": "15min_market",
+      "skeleton_crew": false
+    },
+    {
+      "id": "bull",
+      "name": "Bull",
+      "emoji": "🐂",
+      "department": "analysis",
+      "role": "senior",
+      "schedule": "on_demand",
+      "skeleton_crew": false
+    },
+    {
+      "id": "bear",
+      "name": "Bear",
+      "emoji": "🐻",
+      "department": "analysis",
+      "role": "senior",
+      "schedule": "on_demand",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_bridge",
+      "name": "The Bridge",
+      "emoji": "🌉",
+      "department": "analysis",
+      "role": "senior",
+      "schedule": "30min_market",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_architect",
+      "name": "The Architect",
+      "emoji": "🏛️",
+      "department": "strategy",
+      "role": "team_leader",
+      "schedule": "4h_market_on_demand",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_scribe",
+      "name": "The Scribe",
+      "emoji": "✍️",
+      "department": "strategy",
+      "role": "senior",
+      "schedule": "on_demand_after_architect",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_shield",
+      "name": "The Shield",
+      "emoji": "🛡️",
+      "department": "decision",
+      "role": "team_leader",
+      "schedule": "every_trade_plan",
+      "skeleton_crew": false,
+      "veto_power": true,
+      "exempt_from_tokin": true
+    },
+    {
+      "id": "the_boss",
+      "name": "The Boss",
+      "emoji": "👔",
+      "department": "decision",
+      "role": "team_leader",
+      "schedule": "after_shield_approval",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_messenger",
+      "name": "The Messenger",
+      "emoji": "📲",
+      "department": "decision",
+      "role": "senior",
+      "schedule": "24/7",
+      "skeleton_crew": true,
+      "exempt_from_tokin": true
+    },
+    {
+      "id": "the_trigger",
+      "name": "The Trigger",
+      "emoji": "⚡",
+      "department": "execution",
+      "role": "team_leader",
+      "schedule": "on_human_approval_only",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_watchdog",
+      "name": "The Watchdog",
+      "emoji": "🐕",
+      "department": "execution",
+      "role": "senior",
+      "schedule": "24/7",
+      "skeleton_crew": true
+    },
+    {
+      "id": "the_historian",
+      "name": "The Historian",
+      "emoji": "📚",
+      "department": "learning",
+      "role": "team_leader",
+      "schedule": "daily_offhours_on_demand",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_professor",
+      "name": "The Professor",
+      "emoji": "🎓",
+      "department": "learning",
+      "role": "senior",
+      "schedule": "after_every_closed_trade",
+      "skeleton_crew": false
+    },
+    {
+      "id": "the_eleventh_man",
+      "name": "The Eleventh Man",
+      "emoji": "🎭",
+      "department": "special",
+      "role": "senior",
+      "schedule": "after_every_scribe_report",
+      "skeleton_crew": false,
+      "special": true,
+      "mandatory_contrarian": true
+    },
+    {
+      "id": "maverick",
+      "name": "Maverick",
+      "emoji": "🎲",
+      "department": "special",
+      "role": "junior",
+      "schedule": "4h_market",
+      "skeleton_crew": false,
+      "special": true,
+      "throttle_priority": "first"
+    },
+    {
+      "id": "tokin",
+      "name": "Tokin",
+      "emoji": "💰",
+      "department": "meta",
+      "role": "team_leader",
+      "schedule": "24/7_sidecar",
+      "skeleton_crew": true,
+      "meta": true,
+      "veto_power": true,
+      "budget_usd_monthly_llm": 30,
+      "budget_usd_monthly_hard_cap": 100,
+      "alert_threshold_pct": 80,
+      "emergency_brake_pct": 95,
+      "hard_stop_pct": 100
+    }
+  ],
+
+  "v1_agent_modifications": {
+    "_readme": "Refinements to existing V1 agents. These are enhancements to implement during V1 build — not new agents.",
+
+    "x_ray": {
+      "additions": [
+        "Monitor trending hashtags across Twitter/X — not just tickers and political accounts. Detect when a hashtag crosses relevance threshold for markets (e.g. #TariffsNow, #BankRun, #CryptoRegulation).",
+        "Trend velocity tracking — how fast is a topic accelerating? A hashtag going from 10K to 500K mentions in 2h is a different signal than steady growth."
+      ]
+    },
+
+    "the_scheduler": {
+      "additions": [
+        "Expand coverage to ALL future events with any market relevance — not just economic releases. Includes: geopolitical summits, product launches (Apple, Tesla, NVIDIA), FDA approval dates, regulatory deadlines, election calendars, central bank blackout periods, index rebalancing dates, major conference schedules (Davos, Jackson Hole, FOMC).",
+        "Maintain a rolling 90-day forward calendar, not just the current week."
+      ]
+    },
+
+    "headlines": {
+      "additions": [
+        "The Reporter sub-agent: a spawnable local-sources specialist that Headlines activates when a story has strong regional dimension. The Reporter searches local news sources by country/region rather than global wires.",
+        "Example: if Headlines is tracking a Mexico story, The Reporter searches Milenio, TV Azteca, El Financiero, El Economista, Expansión, Forbes México, El Universal.",
+        "The Reporter is not a standalone agent — it is a tool Headlines calls. It returns a local_context_package back to Headlines who incorporates it into the full analysis.",
+        "Source library by region maintained in config — new regions added as the watchlist grows."
+      ],
+      "reporter_sources_by_region": {
+        "mexico": ["Milenio", "TV Azteca", "El Financiero", "El Economista", "Expansión", "Forbes México", "El Universal", "Reforma"],
+        "usa": ["Bloomberg", "WSJ", "Reuters", "AP", "CNBC", "MarketWatch", "Barron's"],
+        "europe": ["FT", "Reuters EU", "Les Echos", "Handelsblatt", "El País Economía", "Corriere della Sera"],
+        "china": ["Caixin", "South China Morning Post", "Global Times", "Xinhua Finance"],
+        "latam": ["El País (LATAM)", "Infobae", "La Nación", "Folha de S.Paulo", "Valor Econômico"]
+      }
+    },
+
+    "charts": {
+      "additions": [
+        "Strategy-aware analysis: Charts must know the current active trading strategy (e.g. trend-following, mean-reversion, breakout, swing) and adjust which indicators it prioritizes and how it interprets signals accordingly.",
+        "Rule integration: Charts incorporates 'The Rule' — a configurable set of non-negotiable conditions that must be true for a setup to be valid. If any Rule condition fails, the setup is flagged as invalid regardless of other indicators.",
+        "The active strategy and Rule parameters are read from config at startup and can be updated by The Architect or the human without restarting."
+      ]
+    },
+
+    "the_accountant": {
+      "additions": [
+        "Personal Finance Mode: a dedicated view of Alfaro's own financial picture within the trading context. Tracks: total capital deployed, paper P&L per open trade, cumulative realized P&L, monthly LLM + API cost vs budget (from Tokin), estimated monthly savings vs target.",
+        "Plain-language summaries: The Accountant explains personal trade economics in simple terms — not quant jargon. 'This month you spent $18 on AI analysis, made 3 trades on paper, and your simulated P&L is +$240 (if real).'",
+        "Produces a personal dashboard card on demand: capital at risk, current drawdown, best/worst paper trade, cost per trade analyzed, ROI on the AI system itself."
+      ]
+    },
+
+    "bull_and_bear": {
+      "additions": [
+        "Scheduled system improvement debates every 24h: Bull and Bear debate not just individual trades but the system itself. 'What is our strategy missing? Where are we getting signals wrong? What market conditions are we underweighted for?'",
+        "Weekly all-agent forum: once per week, all agents publish a brief 'what I observed this week that the system should know' to the Knowledge Bus. The Scribe collects these and produces a System Improvement Report — a structured list of potential improvements, ranked by estimated impact.",
+        "The System Improvement Report goes to The Boss and The Messenger (WhatsApp summary to Alfaro every Sunday)."
+      ]
+    },
+
+    "the_shield": {
+      "additions": [
+        "Per-strategy risk profiles: The Shield loads a different risk parameter set depending on the active strategy. CONSERVATIVE, BALANCED, AGGRESSIVE profiles already exist — now also STRATEGY-SPECIFIC profiles.",
+        "Example: a mean-reversion strategy may allow tighter stops but higher frequency. A trend-following strategy may allow wider stops but smaller size. Each strategy profile defines its own max risk %, max heat, stop rules, and pre-event behavior.",
+        "Strategy profiles are defined in config and selectable by Alfaro or The Architect. The Shield enforces whichever is active."
+      ]
+    },
+
+    "the_messenger": {
+      "whatsapp_message_format": {
+        "description": "Full specification for what every trade signal WhatsApp message must include.",
+        "required_fields": [
+          {
+            "field": "signal_header",
+            "example": "🔔 NVDA — BUY SIGNAL · 78% conviction",
+            "note": "Ticker, direction, conviction score always on line 1"
+          },
+          {
+            "field": "reasoning_summary",
+            "example": "Why: Strong earnings beat incoming (The Scheduler), unusual call options detected (Recon), RSI oversold on 4H (Charts), DXY weakening (Globe). Bull case won debate 3-1.",
+            "note": "Plain language. Why does the system want to do this? Max 3 sentences."
+          },
+          {
+            "field": "trade_parameters",
+            "example": "Entry: $141.50 | Stop: $138.00 | TP1: $148 | TP2: $155",
+            "note": "Always includes entry, stop-loss, and at least one take-profit"
+          },
+          {
+            "field": "risk_and_reward",
+            "example": "Risk: $350 (1.5% of capital) | Target gain: $1,120 (R:R 1:3.2)",
+            "note": "Dollar amounts in addition to percentages so it's concrete"
+          },
+          {
+            "field": "expected_profit_scenario",
+            "example": "If TP1 hit: +$700. If TP2 hit: +$1,120. If stopped out: -$350.",
+            "note": "Concrete dollar scenarios for each outcome"
+          },
+          {
+            "field": "exit_plan",
+            "example": "Plan: Sell 50% at TP1 ($148), trail stop to breakeven, sell remaining at TP2 or earnings date (Apr 23).",
+            "note": "Always specify: when and how we plan to exit. No open-ended holds."
+          },
+          {
+            "field": "time_sensitivity",
+            "example": "⏰ Signal valid for ~4h. Earnings in 6 days — position size reduced 50% per The Shield.",
+            "note": "How long is this signal valid? Any upcoming events that affect it?"
+          },
+          {
+            "field": "contrarian_note",
+            "example": "⚠️ Eleventh Man flags: heavily crowded trade, 3 similar setups failed in Oct 2024.",
+            "note": "Always include if Eleventh Man raised a significant contrarian case. Skip if case was weak."
+          },
+          {
+            "field": "action_buttons",
+            "example": "[✅ APPROVE] [❌ REJECT] [📄 FULL REPORT] [✏️ MODIFY SIZE] [⏸️ WAIT 1H]",
+            "note": "MODIFY SIZE and WAIT options added to V1 basic buttons"
+          }
+        ],
+        "daily_digest_format": {
+          "time": "9:00am ET every market day",
+          "includes": [
+            "Open positions summary (P&L, distance to stop/TP)",
+            "Today's key scheduled events (from The Scheduler)",
+            "Overnight significant news (from Headlines)",
+            "System budget status (from Tokin)",
+            "Any pending approvals older than 30 min"
+          ]
+        },
+        "weekly_system_report": {
+          "time": "Sunday 10:00am",
+          "includes": [
+            "Week's paper trade results",
+            "Agent leaderboard changes (from The Professor)",
+            "System Improvement Report (from The Scribe via all-agent forum)",
+            "Budget summary for the week",
+            "Upcoming week's major events calendar"
+          ]
+        }
+      }
+    }
+  },
+
+  "agents_v2_additions": [
+    {
+      "id": "the_greek",
+      "name": "The Greek",
+      "emoji": "🎰",
+      "department": "research",
+      "role": "senior",
+      "schedule": "1h_market_opex_daily",
+      "skeleton_crew": false,
+      "v2_phase": 3
+    },
+    {
+      "id": "the_cartographer",
+      "name": "The Cartographer",
+      "emoji": "🗺️",
+      "department": "research",
+      "role": "senior",
+      "schedule": "4h_market_daily_offhours",
+      "skeleton_crew": false,
+      "v2_phase": 4
+    },
+    {
+      "id": "the_storm",
+      "name": "The Storm",
+      "emoji": "⛈️",
+      "department": "analysis",
+      "role": "senior",
+      "schedule": "30min_market_2h_offhours",
+      "skeleton_crew": false,
+      "v2_phase": 2
+    },
+    {
+      "id": "the_oracle",
+      "name": "The Oracle",
+      "emoji": "🔮",
+      "department": "strategy",
+      "role": "senior",
+      "schedule": "on_demand_after_architect",
+      "skeleton_crew": false,
+      "v2_phase": 3
+    },
+    {
+      "id": "the_librarian",
+      "name": "The Librarian",
+      "emoji": "📖",
+      "department": "learning",
+      "role": "senior",
+      "schedule": "always_on_on_demand",
+      "skeleton_crew": false,
+      "v2_phase": 4
+    },
+    {
+      "id": "the_auditor",
+      "name": "The Auditor",
+      "emoji": "🔎",
+      "department": "meta",
+      "role": "senior",
+      "schedule": "1h_market_daily_offhours",
+      "skeleton_crew": true,
+      "meta": true,
+      "v2_phase": 2
+    },
+    {
+      "id": "the_scout",
+      "name": "The Scout",
+      "emoji": "🧭",
+      "department": "research",
+      "role": "junior",
+      "schedule": "audit_48h_discovery_weekly_sunday",
+      "skeleton_crew": false,
+      "v2_phase": 2,
+      "purpose": "Source quality auditor + new source discovery agent. Does two jobs: (1) AUDIT — verifies all current data sources are healthy, accurate, and not degraded. (2) DISCOVERY — actively searches for new free/low-cost sources the system isn't using yet.",
+      "bus_output": ["source_health_report", "degraded_source_alert", "new_source_candidate", "data_quality_score"],
+      "report_format": {
+        "new_source_fields": ["source_name", "source_type", "what_it_provides", "cost", "which_agent_benefits", "quality_score", "recommendation"],
+        "degraded_source_fields": ["source_name", "agent_affected", "issue_detected", "severity", "suggested_action"],
+        "severity_levels": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+        "recommendation_values": ["ADD", "MONITOR", "SKIP"]
+      },
+      "sacred_rule": "Never proposes adding a source without verifying it works. Never removes a source without alerting the human first.",
+      "reports_to": ["the_architect", "the_messenger"],
+      "supervised_by": "tokin"
+    },
+    {
+      "id": "the_joker",
+      "name": "The Joker",
+      "emoji": "🃏",
+      "department": "special",
+      "role": "senior",
+      "schedule": "8h_market",
+      "skeleton_crew": false,
+      "special": true,
+      "v2_phase": 3,
+      "throttle_priority": "second_after_maverick",
+      "purpose": "Asymmetric trade specialist. Finds setups where max loss is small and upside is extreme (10x, 20x, 50x). Thinks OTM options before binary events, forgotten assets with catalysts, structural mispricings. The difference from Maverick: Maverick is creative and lateral. The Joker specifically targets extreme asymmetry — risk 1, reward 10-50.",
+      "bus_output": ["asymmetric_idea", "joker_play", "lottery_ticket"],
+      "output_format": {
+        "required_fields": ["idea_name", "thesis", "the_edge", "instrument", "position_size", "trigger", "max_loss", "payout_scenario", "asymmetry_ratio", "crazy_score", "conviction"],
+        "position_size_rule": "Always small — max 1-2% of portfolio",
+        "crazy_score_range": "1-10 (how insane it sounds)",
+        "conviction_range": "0-100"
+      },
+      "sacred_rule": "NEVER proposes an idea without max_loss perfectly defined. The idea can be crazy, the risk management never is.",
+      "boss_label": "[JOKER PLAY]"
+    },
+    {
+      "id": "questlog",
+      "name": "Questlog",
+      "emoji": "📋",
+      "department": "meta",
+      "role": "senior",
+      "schedule": "always_on_event_driven",
+      "skeleton_crew": true,
+      "meta": true,
+      "v2_phase": 2,
+      "purpose": "Gamification engine and XP system manager. Tracks XP for all agents with custom XP rules per agent (since a research agent earns XP differently than an execution agent). Manages levels, badges, leaderboard, and skill trees. Produces weekly XP summary. Also tracks user XP (Alfaro) for engaging with the system.",
+      "xp_sources_by_agent_type": {
+        "research_agents": ["Accurate signal that made it to a trade plan", "Unique data point no other agent found", "Early detection before mainstream news"],
+        "analysis_agents": ["Correct Bull/Bear case outcome", "High-confidence pattern that played out", "Divergence detection that proved correct"],
+        "strategy_agents": ["Trade plan resulted in approved signal", "Improvement suggestion adopted by system", "Correct 'no trade' call on a day with losses"],
+        "decision_agents": ["Veto that saved a losing trade (Shield)", "Correct final verdict (Boss)", "Human acted on signal within 30 min (Messenger)"],
+        "execution_agents": ["Clean execution at target price (Trigger)", "Stop-loss caught before bigger loss (Watchdog)"],
+        "learning_agents": ["Backtest that revealed useful insight (Historian)", "Agent weight adjustment that improved accuracy (Professor)"],
+        "special_agents": ["Contrarian case proved correct (Eleventh Man)", "Creative idea adopted into trade plan (Maverick)", "Joker play that hit (Joker)"],
+        "meta_agents": ["Budget saved vs prior week (Tokin)", "Data corruption caught before affecting trade (Scout)", "System health issue detected early (Auditor)"]
+      },
+      "levels": [
+        {"range": "1-4",   "title": "Intern",  "unlocks": "Basic analysis tasks"},
+        {"range": "5-9",   "title": "Junior",  "unlocks": "Full pipeline participation"},
+        {"range": "10-14", "title": "Senior",  "unlocks": "Debate leadership, cross-dept messages"},
+        {"range": "15-19", "title": "Lead",    "unlocks": "Can hire and spawn new sub-agents"},
+        {"range": "20-24", "title": "Manager", "unlocks": "Strategy override suggestions"},
+        {"range": "25+",   "title": "Legend",  "unlocks": "Full autonomy mode (still human-approved)"}
+      ],
+      "user_xp_sources": ["Approved a trade signal", "Reviewed full report", "Gave feedback on system improvement", "30+ days consecutive paper trading", "First real trade executed"],
+      "bus_output": ["xp_awarded", "level_up_event", "leaderboard_update", "badge_earned", "weekly_xp_summary"]
+    }
+  ],
+
+  "skeleton_crew_ids": [
+    "x_ray",
+    "the_scheduler",
+    "cryptid",
+    "globe",
+    "tokin",
+    "the_watchdog",
+    "the_messenger"
+  ],
+
+  "always_247_ids": [
+    "x_ray",
+    "the_scheduler",
+    "cryptid",
+    "globe",
+    "tokin",
+    "the_watchdog",
+    "the_messenger"
+  ],
+
+  "veto_agents": [
+    "the_shield",
+    "tokin"
+  ],
+
+  "exempt_from_tokin": [
+    "the_shield",
+    "the_messenger"
+  ]
+}

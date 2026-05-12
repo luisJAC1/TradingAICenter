@@ -1,0 +1,91 @@
+services:
+
+  # ── Redis — Knowledge Bus pub/sub + data cache ─────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: trading-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save ""
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── ChromaDB — Semantic memory (vector search) ─────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: trading-chromadb
+    restart: unless-stopped
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+    ports:
+      - "8000:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+
+  # ── Python Brain — FastAPI + 26 trading agents ─────────────────────────────
+  brain:
+    build:
+      context: ../brain
+      dockerfile: Dockerfile
+    container_name: trading-brain
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+      - .env.docker.private
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8791"
+      REDIS_URL: redis://redis:6379/0
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: "8000"
+      UI_URL: http://claw-empire:8790
+    ports:
+      - "8791:8791"
+    depends_on:
+      redis:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8791/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+    volumes:
+      - ./data/brain:/app/data
+  # ── Claw-Empire UI ─────────────────────────────────────────────────────────
+  claw-empire:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_UID: 10001
+        APP_GID: 10001
+    container_name: claw-empire
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+      - .env.docker.private
+    environment:
+      DB_PATH: /app/data/claw-empire.sqlite
+      LOGS_DIR: /app/data/logs
+      BRAIN_URL: http://brain:8791
+    ports:
+      - "8790:8790"
+    volumes:
+      - ./data:/app/data
+    working_dir: /app
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - redis
+      - brain
+
+volumes:
+  chromadb_data:
